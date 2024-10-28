@@ -55,4 +55,15 @@ public class DishJpaAdapter implements IDishPersistencePort {
     public boolean existById(Long id) {
         return dishRepository.existsById(id);
     }
+
+    @Override
+    public void changeDishStatus(Long id, boolean status) {
+        Optional<DishEntity> optionalDish = dishRepository.findById(id);
+
+        if(optionalDish.isPresent()) {
+            DishEntity existingDish = optionalDish.get();
+            existingDish.setActive(status);
+            dishRepository.save(existingDish);
+        }
+    }
 }

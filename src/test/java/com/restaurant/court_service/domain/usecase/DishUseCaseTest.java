@@ -110,4 +110,20 @@ class DishUseCaseTest {
         Mockito.verify(dishPersistencePort).updateDish(dishUpdate);
     }
 
+    @Test
+    void DishUseCase_ChangeDishStatus_ShouldCallChangeDishStatusOnPersistencePort() {
+        Mockito.when(dishPersistencePort.existById(Mockito.anyLong())).thenReturn(true);
+        dishUseCase.changeDishStatus(1L,true);
+        Mockito.verify(dishPersistencePort).changeDishStatus(1L,true);
+    }
+    @Test
+    void DishUseCase_ChangeDishStatus_WhenDishNotFound_ShouldThrowDishNotFoundException() {
+        Mockito.when(dishPersistencePort.existById(Mockito.anyLong())).thenReturn(false);
+
+        assertThrows(DishNotFoundException.class, () -> {
+            dishUseCase.changeDishStatus(1L,true);
+        });
+
+        Mockito.verify(dishPersistencePort, Mockito.never()).changeDishStatus(1L,true);
+    }
 }

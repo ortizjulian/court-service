@@ -49,4 +49,12 @@ public class DishUseCase implements IDishServicePort {
 
         dishPersistencePort.updateDish(dishUpdate);
     }
+
+    @Override
+    public void changeDishStatus(Long id, boolean status) {
+        if(!dishPersistencePort.existById(id)){
+            throw new DishNotFoundException(Constants.EXCEPTION_DISH_NOT_FOUND + id);
+        }
+        dishPersistencePort.changeDishStatus(id,status);
+    }
 }

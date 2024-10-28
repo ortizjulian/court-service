@@ -15,7 +15,7 @@ public class SecurityConstants {
     public static final String CLAIM_ROLE = "role";
     public static final String CLAIM_ID = "id";
     //Roles names
-    public static final String ROLE_OWNER = "Propieatario";
+    public static final String ROLE_OWNER = "Propietario";
     public static final String ROLE_ADMIN = "Administrador";
 
 }
