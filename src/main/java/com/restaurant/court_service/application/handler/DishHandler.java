@@ -40,4 +40,9 @@ public class DishHandler implements IDishHandler{
         DishUpdate dishUpdate = dishDtoUpdateMapper.toDishUpdate(dishDtoUpdate);
         dishServicePort.updateDish(dishUpdate);
     }
+
+    @Override
+    public void changeDishStatus(Long id, boolean status) {
+        dishServicePort.changeDishStatus(id,status);
+    }
 }

@@ -6,4 +6,5 @@ import com.restaurant.court_service.domain.model.DishUpdate;
 public interface IDishServicePort {
     void createDish(Dish dish);
     void updateDish(DishUpdate dishUpdate);
+    void changeDishStatus(Long id, boolean status);
 }

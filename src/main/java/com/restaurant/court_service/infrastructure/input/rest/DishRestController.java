@@ -37,4 +37,16 @@ public class DishRestController {
         dishHandler.updateDish(dishDtoUpdate);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<Void> activateDish(@PathVariable Long id) {
+        dishHandler.changeDishStatus(id, true);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<Void> deactivateDish(@PathVariable Long id) {
+        dishHandler.changeDishStatus(id, false);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -7,4 +7,6 @@ public interface IDishHandler {
     void createDish(DishDtoRequest dishDtoRequest);
 
     void updateDish(DishDtoUpdate dishDtoUpdate);
+
+    void changeDishStatus(Long id, boolean status);
 }
