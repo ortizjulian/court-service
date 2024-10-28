@@ -24,12 +24,10 @@ class RestaurantUseCaseTest {
     void setup(){
         MockitoAnnotations.openMocks(this);
     }
+    Restaurant restaurant = new Restaurant( 1L,"Frisby", "1134134", "Cra 77" , "+304444444", "http://logo.com");
 
     @Test
     void RestaurantUseCase_CreateRestaurant_ShouldCallCreeteRestaurantOnPersistencePort() {
-        Restaurant restaurant = new Restaurant( "Frisby", "1134134", "Cra 77" , "+304444444", "http://logo.com");
-
-
         Mockito.when(restaurantPersistencePort.existByNit(Mockito.anyString())).thenReturn(false);
 
         Mockito.doNothing().when(restaurantPersistencePort).createRestaurant(restaurant);
@@ -39,9 +37,6 @@ class RestaurantUseCaseTest {
 
     @Test
     void RestaurantUseCase_CreateRestaurant_WhenCreatingRestaurantWithExistingNit_ShoulThrowRestaurantDuplicatedNit() {
-        Restaurant restaurant = new Restaurant( "Frisby", "1134134", "Cra 77" , "+304444444", "http://logo.com");
-
-
         Mockito.when(restaurantPersistencePort.existByNit(Mockito.anyString())).thenReturn(true);
 
         assertThrows(RestaurantDuplicateNitException.class, () -> {
