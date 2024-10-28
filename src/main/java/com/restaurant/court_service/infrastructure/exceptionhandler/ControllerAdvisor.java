@@ -1,6 +1,8 @@
 package com.restaurant.court_service.infrastructure.exceptionhandler;
 
-import com.restaurant.court_service.domain.exception.RestaurantDuplicateNit;
+import com.restaurant.court_service.domain.exception.CategoryNotFoundException;
+import com.restaurant.court_service.domain.exception.RestaurantDuplicateNitException;
+import com.restaurant.court_service.domain.exception.RestaurantNotFoundException;
 import com.restaurant.court_service.utils.Constants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +20,25 @@ public class ControllerAdvisor {
 
     private static final String MESSAGE = Constants.RESPONSE_MESSAGE_KEY;
 
-    //CategoryExceptions
-    @ExceptionHandler(RestaurantDuplicateNit.class)
+    @ExceptionHandler(RestaurantDuplicateNitException.class)
     public ResponseEntity<Map<String, String>> handleRestaurantDuplicateNitException(
-            RestaurantDuplicateNit restaurantDuplicateNitException) {
+            RestaurantDuplicateNitException restaurantDuplicateNitException) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Collections.singletonMap(MESSAGE, restaurantDuplicateNitException.getMessage()));
+    }
+
+    @ExceptionHandler(RestaurantNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleRestaurantNotFoundException(
+            RestaurantNotFoundException restaurantNotFoundException) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Collections.singletonMap(MESSAGE, restaurantNotFoundException.getMessage()));
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleCategoryNotFoundException(
+            CategoryNotFoundException categoryNotFoundException) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Collections.singletonMap(MESSAGE, categoryNotFoundException.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

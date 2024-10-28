@@ -1,6 +1,6 @@
 package com.restaurant.court_service.domain.usecase;
 
-import com.restaurant.court_service.domain.exception.RestaurantDuplicateNit;
+import com.restaurant.court_service.domain.exception.RestaurantDuplicateNitException;
 import com.restaurant.court_service.domain.model.Restaurant;
 import com.restaurant.court_service.domain.spi.IRestaurantPersistencePort;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,9 +9,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
-import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -47,7 +44,7 @@ class RestaurantUseCaseTest {
 
         Mockito.when(restaurantPersistencePort.existByNit(Mockito.anyString())).thenReturn(true);
 
-        assertThrows(RestaurantDuplicateNit.class, () -> {
+        assertThrows(RestaurantDuplicateNitException.class, () -> {
             restaurantUseCase.createRestaurant(restaurant);
         });
 
