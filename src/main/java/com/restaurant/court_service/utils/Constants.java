@@ -28,6 +28,16 @@ public class Constants {
     public static final String RESTAURANT_NAME_REG_EXP = "^(?=.*[a-zA-Z]).+$";
 
     public static final String EXCEPTION_RESTAURANT_DUPLICATED_NIT = "There is already a restaurant with this NIT.";
+    public static final String EXCEPTION_RESTAURANT_NOT_FOUND = "Restaurant not found with ID: ";
+    public static final String EXCEPTION_CATEGORY_NOT_FOUND = "Category not found with ID: ";
+
+    public static final String EXCEPTION_DISH_NAME_MANDATORY = "The dish name is mandatory.";
+    public static final String EXCEPTION_DISH_PRICE_MANDATORY = "The dish price must be a positive integer greater than 0.";
+    public static final String EXCEPTION_DISH_DESCRIPTION_MANDATORY = "The dish description is mandatory.";
+    public static final String EXCEPTION_DISH_IMAGE_URL_MANDATORY = "The dish image URL is mandatory.";
+    public static final String EXCEPTION_DISH_IMAGE_URL_INVALID = "The dish image URL is invalid.";
+    public static final String EXCEPTION_DISH_RESTAURANT_MANDATORY = "The restaurant ID is mandatory.";
+    public static final String EXCEPTION_DISH_CATEGORY_MANDATORY = "The category ID is mandatory.";
 
 }
 
