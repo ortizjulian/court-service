@@ -2,9 +2,12 @@ package com.restaurant.court_service.domain.usecase;
 
 
 import com.restaurant.court_service.domain.exception.CategoryNotFoundException;
+import com.restaurant.court_service.domain.exception.DishNotFoundException;
 import com.restaurant.court_service.domain.exception.RestaurantNotFoundException;
+import com.restaurant.court_service.domain.exception.UpdateDishException;
 import com.restaurant.court_service.domain.model.Category;
 import com.restaurant.court_service.domain.model.Dish;
+import com.restaurant.court_service.domain.model.DishUpdate;
 import com.restaurant.court_service.domain.model.Restaurant;
 import com.restaurant.court_service.domain.spi.ICategoryPersistencePort;
 import com.restaurant.court_service.domain.spi.IDishPersistencePort;
@@ -73,4 +76,38 @@ class DishUseCaseTest {
 
         Mockito.verify(dishPersistencePort).createDish(dish);
     }
+
+    @Test
+    void DishUseCase_UpdateDish_WhenDishNotFound_ShouldThrowDishNotFoundException() {
+        Mockito.when(dishPersistencePort.existById(Mockito.anyLong())).thenReturn(false);
+
+        assertThrows(DishNotFoundException.class, () -> {
+            dishUseCase.updateDish(new DishUpdate(1L, 1000,"Descripción"));
+        });
+
+        Mockito.verify(dishPersistencePort, Mockito.never()).updateDish(Mockito.any(DishUpdate.class));
+    }
+
+    @Test
+    void DishUseCase_UpdateDish_WhenNoPriceOrDescriptionProvided_ShouldThrowUpdateDishException() {
+
+        Mockito.when(dishPersistencePort.existById(Mockito.anyLong())).thenReturn(true);
+        assertThrows(UpdateDishException.class, () -> {
+            dishUseCase.updateDish(new DishUpdate(1L, null, null));
+        });
+
+        Mockito.verify(dishPersistencePort, Mockito.never()).updateDish(Mockito.any(DishUpdate.class));
+    }
+
+    @Test
+    void DishUseCase_UpdateDish_ShouldCallUpdateDishOnPersistencePort() {
+        Mockito.when(dishPersistencePort.existById(Mockito.anyLong())).thenReturn(true);
+
+        DishUpdate dishUpdate = new DishUpdate(1L, 25000, null);
+
+        dishUseCase.updateDish(dishUpdate);
+        
+        Mockito.verify(dishPersistencePort).updateDish(dishUpdate);
+    }
+
 }

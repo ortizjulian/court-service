@@ -1,6 +1,7 @@
 package com.restaurant.court_service.infrastructure.input.rest;
 
 import com.restaurant.court_service.application.dto.DishDtoRequest;
+import com.restaurant.court_service.application.dto.DishDtoUpdate;
 import com.restaurant.court_service.application.handler.IDishHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("dish")
@@ -32,5 +30,11 @@ public class DishRestController {
     public ResponseEntity<Void> createDish(@Valid @RequestBody DishDtoRequest dishDtoRequest) {
         dishHandler.createDish(dishDtoRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PatchMapping
+    public ResponseEntity<Void> updateDish(@Valid @RequestBody DishDtoUpdate dishDtoUpdate) {
+        dishHandler.updateDish(dishDtoUpdate);
+        return ResponseEntity.noContent().build();
     }
 }

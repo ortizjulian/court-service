@@ -1,6 +1,7 @@
 package com.restaurant.court_service.infrastructure.output.jpa.adapter;
 
 import com.restaurant.court_service.domain.model.Dish;
+import com.restaurant.court_service.domain.model.DishUpdate;
 import com.restaurant.court_service.domain.spi.IDishPersistencePort;
 import com.restaurant.court_service.infrastructure.output.jpa.entity.CategoryEntity;
 import com.restaurant.court_service.infrastructure.output.jpa.entity.DishEntity;
@@ -30,5 +31,28 @@ public class DishJpaAdapter implements IDishPersistencePort {
             dishEntity.setCategory(optionalCategoryEntity.get());
             this.dishRepository.save(dishEntity);
         }
+    }
+
+    @Override
+    public void updateDish(DishUpdate dishUpdate) {
+        Long dishId = dishUpdate.getId();
+        Optional<DishEntity> optionalDish = dishRepository.findById(dishId);
+
+        if(optionalDish.isPresent()){
+            DishEntity existingDish = optionalDish.get();
+            if (dishUpdate.getPrice() != null) {
+                existingDish.setPrice(dishUpdate.getPrice());
+            }
+            if (dishUpdate.getDescription() != null) {
+                existingDish.setDescription(dishUpdate.getDescription());
+            }
+            dishRepository.save(existingDish);
+        }
+
+    }
+
+    @Override
+    public boolean existById(Long id) {
+        return dishRepository.existsById(id);
     }
 }

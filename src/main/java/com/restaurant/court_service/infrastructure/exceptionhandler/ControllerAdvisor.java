@@ -1,8 +1,6 @@
 package com.restaurant.court_service.infrastructure.exceptionhandler;
 
-import com.restaurant.court_service.domain.exception.CategoryNotFoundException;
-import com.restaurant.court_service.domain.exception.RestaurantDuplicateNitException;
-import com.restaurant.court_service.domain.exception.RestaurantNotFoundException;
+import com.restaurant.court_service.domain.exception.*;
 import com.restaurant.court_service.utils.Constants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +37,19 @@ public class ControllerAdvisor {
             CategoryNotFoundException categoryNotFoundException) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Collections.singletonMap(MESSAGE, categoryNotFoundException.getMessage()));
+    }
+
+    @ExceptionHandler(DishNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleDishNotFoundException(
+            DishNotFoundException dishNotFoundException) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Collections.singletonMap(MESSAGE, dishNotFoundException.getMessage()));
+    }
+    @ExceptionHandler(UpdateDishException.class)
+    public ResponseEntity<Map<String, String>> handleUpdateDishException(
+            UpdateDishException updateDishException) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Collections.singletonMap(MESSAGE, ExceptionResponse.UPDATE_DISH_EXCEPTION.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

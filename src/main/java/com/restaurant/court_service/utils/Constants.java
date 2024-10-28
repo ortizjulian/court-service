@@ -31,6 +31,7 @@ public class Constants {
     public static final String EXCEPTION_RESTAURANT_NOT_FOUND = "Restaurant not found with ID: ";
     public static final String EXCEPTION_CATEGORY_NOT_FOUND = "Category not found with ID: ";
 
+    public static final String EXCEPTION_DISH_ID_MANDATORY = "The dish id is mandatory.";
     public static final String EXCEPTION_DISH_NAME_MANDATORY = "The dish name is mandatory.";
     public static final String EXCEPTION_DISH_PRICE_MANDATORY = "The dish price must be a positive integer greater than 0.";
     public static final String EXCEPTION_DISH_DESCRIPTION_MANDATORY = "The dish description is mandatory.";
@@ -38,6 +39,9 @@ public class Constants {
     public static final String EXCEPTION_DISH_IMAGE_URL_INVALID = "The dish image URL is invalid.";
     public static final String EXCEPTION_DISH_RESTAURANT_MANDATORY = "The restaurant ID is mandatory.";
     public static final String EXCEPTION_DISH_CATEGORY_MANDATORY = "The category ID is mandatory.";
+    public static final String EXCEPTION_DISH_NOT_FOUND = "Dish not found with ID: ";
+    public static final String EXCEPTION_DISH_UPDATE_MANDATORY_FIELDS = "At least one of price or description must be provided for update.";
+
 
 }
 
