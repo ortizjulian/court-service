@@ -1,6 +1,6 @@
 package com.restaurant.court_service.application.handler;
 
-import com.restaurant.court_service.application.dto.RestaurantRequestDto;
+import com.restaurant.court_service.application.dto.RestaurantDtoRequest;
 import com.restaurant.court_service.application.mapper.RestaurantRequestDtoMapper;
 import com.restaurant.court_service.domain.api.IRestaurantServicePort;
 import com.restaurant.court_service.domain.model.Restaurant;
@@ -16,8 +16,8 @@ public class RestaurantHandler implements IRestaurantHandler{
     private final IRestaurantServicePort restaurantServicePort;
     private final RestaurantRequestDtoMapper restaurantRequestDtoMapper;
     @Override
-    public void createRestaurant(RestaurantRequestDto restaurantRequestDto) {
-        Restaurant restaurant = restaurantRequestDtoMapper.restaurantRequestDtoToRestaurant(restaurantRequestDto);
+    public void createRestaurant(RestaurantDtoRequest restaurantDtoRequest) {
+        Restaurant restaurant = restaurantRequestDtoMapper.restaurantRequestDtoToRestaurant(restaurantDtoRequest);
         restaurantServicePort.createRestaurant(restaurant);
     }
 }

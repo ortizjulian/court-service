@@ -3,9 +3,10 @@ package com.restaurant.court_service.application.dto;
 import com.restaurant.court_service.utils.Constants;
 import jakarta.validation.constraints.*;
 
-public class RestaurantRequestDto {
+public class RestaurantDtoRequest {
 
     @NotBlank(message = Constants.EXCEPTION_RESTAURANT_NAME_MANDATORY)
+    @Pattern(regexp = Constants.RESTAURANT_NAME_REG_EXP, message = Constants.EXCEPTION_RESTAURANT_NAME_INVALID)
     private String name;
 
     @NotBlank(message = Constants.EXCEPTION_RESTAURANT_NIT_MANDATORY)
@@ -24,7 +25,7 @@ public class RestaurantRequestDto {
     @Pattern(regexp = Constants.URL_REG_EXP, message = Constants.EXCEPTION_RESTAURANT_URL_LOGO_INVALID)
     private String urlLogo;
 
-    public RestaurantRequestDto(String name, String nit, String address, String phone, String urlLogo) {
+    public RestaurantDtoRequest(String name, String nit, String address, String phone, String urlLogo) {
         this.name = name;
         this.nit = nit;
         this.address = address;

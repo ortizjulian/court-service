@@ -1,7 +1,7 @@
 package com.restaurant.court_service.infrastructure.output.security.jwt;
 
-import com.emazon.stock.infrastucture.output.security.entity.SecurityUser;
-import com.emazon.stock.utils.SecurityConstants;
+import com.restaurant.court_service.infrastructure.output.security.entity.SecurityUser;
+import com.restaurant.court_service.utils.SecurityConstants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
