@@ -2,8 +2,11 @@ package com.restaurant.court_service.domain.usecase;
 
 import com.restaurant.court_service.domain.api.IDishServicePort;
 import com.restaurant.court_service.domain.exception.CategoryNotFoundException;
+import com.restaurant.court_service.domain.exception.DishNotFoundException;
 import com.restaurant.court_service.domain.exception.RestaurantNotFoundException;
+import com.restaurant.court_service.domain.exception.UpdateDishException;
 import com.restaurant.court_service.domain.model.Dish;
+import com.restaurant.court_service.domain.model.DishUpdate;
 import com.restaurant.court_service.domain.spi.ICategoryPersistencePort;
 import com.restaurant.court_service.domain.spi.IDishPersistencePort;
 import com.restaurant.court_service.domain.spi.IRestaurantPersistencePort;
@@ -32,5 +35,18 @@ public class DishUseCase implements IDishServicePort {
         }
         dish.setActive(true);
         dishPersistencePort.createDish(dish);
+    }
+
+    @Override
+    public void updateDish(DishUpdate dishUpdate) {
+        if(!dishPersistencePort.existById(dishUpdate.getId())){
+            throw new DishNotFoundException(Constants.EXCEPTION_DISH_NOT_FOUND + dishUpdate.getId());
+        }
+
+        if(dishUpdate.getPrice() == null && dishUpdate.getDescription()==null){
+            throw new UpdateDishException();
+        }
+
+        dishPersistencePort.updateDish(dishUpdate);
     }
 }
