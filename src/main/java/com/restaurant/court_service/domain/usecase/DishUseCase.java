@@ -39,12 +39,12 @@ public class DishUseCase implements IDishServicePort {
 
     @Override
     public void updateDish(DishUpdate dishUpdate) {
-        if(!dishPersistencePort.existById(dishUpdate.getId())){
-            throw new DishNotFoundException(Constants.EXCEPTION_DISH_NOT_FOUND + dishUpdate.getId());
-        }
-
         if(dishUpdate.getPrice() == null && dishUpdate.getDescription()==null){
             throw new UpdateDishException();
+        }
+
+        if(!dishPersistencePort.existById(dishUpdate.getId())){
+            throw new DishNotFoundException(Constants.EXCEPTION_DISH_NOT_FOUND + dishUpdate.getId());
         }
 
         dishPersistencePort.updateDish(dishUpdate);
