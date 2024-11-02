@@ -11,6 +11,7 @@ import com.restaurant.court_service.infrastructure.output.jpa.adapter.CategoryJp
 import com.restaurant.court_service.infrastructure.output.jpa.adapter.DishJpaAdapter;
 import com.restaurant.court_service.infrastructure.output.jpa.adapter.RestaurantJpaAdapter;
 import com.restaurant.court_service.infrastructure.output.jpa.mapper.DishEntityMapper;
+import com.restaurant.court_service.infrastructure.output.jpa.mapper.PageMapper;
 import com.restaurant.court_service.infrastructure.output.jpa.mapper.RestaurantEntityMapper;
 import com.restaurant.court_service.infrastructure.output.jpa.repository.ICategoryRepository;
 import com.restaurant.court_service.infrastructure.output.jpa.repository.IDishRepository;
@@ -25,6 +26,7 @@ public class BeanConfiguration {
 
     private final IRestaurantRepository restaurantRepository;
     private final RestaurantEntityMapper restaurantEntityMapper;
+    private final PageMapper pageMapper;
 
     private final ICategoryRepository categoryRepository;
 
@@ -48,7 +50,7 @@ public class BeanConfiguration {
 
     @Bean
     public IRestaurantPersistencePort restaurantPersistencePort(){
-        return new RestaurantJpaAdapter(restaurantRepository,restaurantEntityMapper );
+        return new RestaurantJpaAdapter(restaurantRepository,restaurantEntityMapper,pageMapper );
     }
 
     @Bean

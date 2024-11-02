@@ -52,6 +52,13 @@ public class ControllerAdvisor {
                 .body(Collections.singletonMap(MESSAGE, ExceptionResponse.UPDATE_DISH_EXCEPTION.getMessage()));
     }
 
+    @ExceptionHandler(PaginationParametersInvalidException.class)
+    public ResponseEntity<Map<String, String>> handlePaginationParametersInvalidException(
+            PaginationParametersInvalidException paginationParametersInvalidException) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Collections.singletonMap(MESSAGE, paginationParametersInvalidException.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException methodArgumentNotValidException) {
         Map<String, String> errors = new HashMap<>();
