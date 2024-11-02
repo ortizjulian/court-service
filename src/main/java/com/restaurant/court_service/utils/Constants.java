@@ -58,6 +58,13 @@ public class Constants {
     public static final String EXCEPTION_DISH_NOT_FOUND = "Dish not found with ID: ";
     public static final String EXCEPTION_DISH_UPDATE_MANDATORY_FIELDS = "At least one of price or description must be provided for update.";
 
+    public static final String DEFAULT_RESTAURANT_ID = "";
+    public static final String DEFAULT_CATEGORY_ID = "";
 
+
+    //MAPPERS - ARTICLE
+    public static final String RESTAURANT_ENTITY = "restaurant";
+    public static final String CATEGORY_ENTITY = "category";
+    public static final String DISH_ID = "id";
 }
 

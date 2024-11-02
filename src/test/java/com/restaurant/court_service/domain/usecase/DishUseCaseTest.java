@@ -5,10 +5,7 @@ import com.restaurant.court_service.domain.exception.CategoryNotFoundException;
 import com.restaurant.court_service.domain.exception.DishNotFoundException;
 import com.restaurant.court_service.domain.exception.RestaurantNotFoundException;
 import com.restaurant.court_service.domain.exception.UpdateDishException;
-import com.restaurant.court_service.domain.model.Category;
-import com.restaurant.court_service.domain.model.Dish;
-import com.restaurant.court_service.domain.model.DishUpdate;
-import com.restaurant.court_service.domain.model.Restaurant;
+import com.restaurant.court_service.domain.model.*;
 import com.restaurant.court_service.domain.spi.ICategoryPersistencePort;
 import com.restaurant.court_service.domain.spi.IDishPersistencePort;
 import com.restaurant.court_service.domain.spi.IRestaurantPersistencePort;
@@ -19,6 +16,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DishUseCaseTest {
@@ -40,7 +41,8 @@ class DishUseCaseTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    Dish dish = new Dish( "Pizza", 20000, "pizza", "http://pizza.com", new Restaurant(1L, "Frisby", "1134134", "Cra 77", "+304444444", "http://logo.com"), new Category(1L, "Entradas", "Aperitivos y entradas"),true);
+    Dish dish = new Dish( 1L,"Pizza", 20000, "pizza", "http://pizza.com", new Restaurant(1L, "Frisby", "1134134", "Cra 77", "+304444444", "http://logo.com"), new Category(1L, "Entradas", "Aperitivos y entradas"),true);
+    Dish dish2 = new Dish( 2L,"Jugo", 20200, "jugo", "http://jugo.com", new Restaurant(1L, "Frisby", "1134134", "Cra 77", "+304444444", "http://logo.com"), new Category(2L, "Jugos", "Jugos y gaseosas"),true);
 
     @Test
     void DishUseCase_CreateDish_WhenCategoryNotFound_ShouldThrowCategoryNotFoundException() {
@@ -125,5 +127,26 @@ class DishUseCaseTest {
         });
 
         Mockito.verify(dishPersistencePort, Mockito.never()).changeDishStatus(1L,true);
+    }
+
+    @Test
+    void  DishUseCase_GetAllDishes_ShouldReturnListOfDishes() {
+
+        List<Dish> mockDishes = Arrays.asList(
+               dish,
+                dish2
+        );
+
+        PageCustom<Dish> dishPageCustom = new PageCustom<>();
+        dishPageCustom.setContent(mockDishes);
+
+        Mockito.when(dishPersistencePort.getAllDishes(0,10,"ASC","name", "", "")).thenReturn(dishPageCustom);
+
+
+        PageCustom<Dish> dishes = dishUseCase.getAllDishes(0,10,"ASC","name", "", "");
+
+        assertEquals(mockDishes, dishes.getContent());
+
+        Mockito.verify(dishPersistencePort, Mockito.times(1)).getAllDishes(0,10,"ASC","name", "", "");
     }
 }

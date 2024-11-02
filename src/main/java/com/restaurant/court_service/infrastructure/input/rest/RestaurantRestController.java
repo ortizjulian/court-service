@@ -15,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("restaurant")
 @RequiredArgsConstructor
@@ -25,12 +23,12 @@ public class RestaurantRestController {
 
     private final IRestaurantHandler restaurantHandler;
 
-    @Operation(summary = "Retrieve all Articles", description = "Returns a list of all Article available in the system.")
+    @Operation(summary = "Retrieve all Restaurants", description = "Returns a list of all Restaurants available in the system.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of Article"),
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of Restaurants"),
     })
     @GetMapping
-    public ResponseEntity<PageCustom<RestaurantDtoResponse>> getAllArticles(
+    public ResponseEntity<PageCustom<RestaurantDtoResponse>> getAllRestaurants(
             @RequestParam(defaultValue = Constants.DEFAULT_PAGE) Integer page,
             @RequestParam(defaultValue = Constants.DEFAULT_SIZE) Integer size,
             @RequestParam(defaultValue = Constants.DEFAULT_SORT_DIRECTION) String sortDirection,

@@ -66,7 +66,7 @@ class RestaurantUseCaseTest {
     }
 
     @Test
-    void RestaurantUseCase_GetAllRestaurants_ShouldReturnCategoriesSortedByNameAscending() {
+    void RestaurantUseCase_GetAllRestaurants_ShouldReturnRestaurantsSortedByNameAscending() {
 
         int page = 0;
         int size = 10;

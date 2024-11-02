@@ -7,9 +7,11 @@ import com.restaurant.court_service.domain.exception.RestaurantNotFoundException
 import com.restaurant.court_service.domain.exception.UpdateDishException;
 import com.restaurant.court_service.domain.model.Dish;
 import com.restaurant.court_service.domain.model.DishUpdate;
+import com.restaurant.court_service.domain.model.PageCustom;
 import com.restaurant.court_service.domain.spi.ICategoryPersistencePort;
 import com.restaurant.court_service.domain.spi.IDishPersistencePort;
 import com.restaurant.court_service.domain.spi.IRestaurantPersistencePort;
+import com.restaurant.court_service.domain.utils.PaginationValidator;
 import com.restaurant.court_service.utils.Constants;
 
 public class DishUseCase implements IDishServicePort {
@@ -56,5 +58,20 @@ public class DishUseCase implements IDishServicePort {
             throw new DishNotFoundException(Constants.EXCEPTION_DISH_NOT_FOUND + id);
         }
         dishPersistencePort.changeDishStatus(id,status);
+    }
+
+    @Override
+    public PageCustom<Dish> getAllDishes(Integer page, Integer size, String sortDirection, String sortBy, String restaurantId, String categoryId) {
+        PaginationValidator.validatePagination(page,size,sortDirection);
+
+        if (restaurantId != null && !restaurantId.isBlank() && !restaurantPersistencePort.existById(Long.parseLong(restaurantId))) {
+            throw new RestaurantNotFoundException(Constants.EXCEPTION_RESTAURANT_NOT_FOUND + restaurantId);
+
+        }
+
+        if (categoryId != null && !categoryId.isBlank() && !categoryPersistencePort.existById(Long.parseLong(categoryId))) {
+            throw new CategoryNotFoundException(Constants.EXCEPTION_CATEGORY_NOT_FOUND  + categoryId);
+        }
+        return this.dishPersistencePort.getAllDishes(page,size,sortDirection,sortBy,restaurantId,categoryId);
     }
 }
