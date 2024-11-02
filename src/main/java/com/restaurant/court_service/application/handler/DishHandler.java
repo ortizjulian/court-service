@@ -3,7 +3,6 @@ package com.restaurant.court_service.application.handler;
 import com.restaurant.court_service.application.dto.DishDtoRequest;
 import com.restaurant.court_service.application.dto.DishDtoResponse;
 import com.restaurant.court_service.application.dto.DishDtoUpdate;
-import com.restaurant.court_service.application.dto.RestaurantDtoResponse;
 import com.restaurant.court_service.application.mapper.DishDtoRequestMapper;
 import com.restaurant.court_service.application.mapper.DishDtoUpdateMapper;
 import com.restaurant.court_service.application.mapper.PageDtoMapper;

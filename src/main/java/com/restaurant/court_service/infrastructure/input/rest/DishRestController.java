@@ -3,7 +3,6 @@ package com.restaurant.court_service.infrastructure.input.rest;
 import com.restaurant.court_service.application.dto.DishDtoRequest;
 import com.restaurant.court_service.application.dto.DishDtoResponse;
 import com.restaurant.court_service.application.dto.DishDtoUpdate;
-import com.restaurant.court_service.application.dto.RestaurantDtoResponse;
 import com.restaurant.court_service.application.handler.IDishHandler;
 import com.restaurant.court_service.domain.model.PageCustom;
 import com.restaurant.court_service.utils.Constants;
