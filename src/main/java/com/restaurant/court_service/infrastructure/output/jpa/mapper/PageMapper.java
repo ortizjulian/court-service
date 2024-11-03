@@ -1,10 +1,11 @@
 package com.restaurant.court_service.infrastructure.output.jpa.mapper;
 
-
 import com.restaurant.court_service.domain.model.Dish;
+import com.restaurant.court_service.domain.model.Order;
 import com.restaurant.court_service.domain.model.PageCustom;
 import com.restaurant.court_service.domain.model.Restaurant;
 import com.restaurant.court_service.infrastructure.output.jpa.entity.DishEntity;
+import com.restaurant.court_service.infrastructure.output.jpa.entity.OrderEntity;
 import com.restaurant.court_service.infrastructure.output.jpa.entity.RestaurantEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -16,11 +17,12 @@ import java.util.List;
 @Mapper(componentModel = "spring",
         unmappedSourcePolicy = ReportingPolicy.IGNORE,
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        uses = {RestaurantEntityMapper.class,DishEntityMapper.class})
+        uses = {RestaurantEntityMapper.class,DishEntityMapper.class,OrderEntityMapper.class})
 public interface PageMapper {
 
     RestaurantEntityMapper RESTAURANT_ENTITY_MAPPER = Mappers.getMapper(RestaurantEntityMapper.class);
     DishEntityMapper DISH_ENTITY_MAPPER = Mappers.getMapper(DishEntityMapper.class);
+    OrderEntityMapper ORDER_ENTITY_MAPPER = Mappers.getMapper(OrderEntityMapper.class);
 
     default PageCustom<Restaurant> toRestaurantPageCustom(Page<RestaurantEntity> page) {
         PageCustom<Restaurant> pageCustom = new PageCustom<>();
@@ -43,6 +45,20 @@ public interface PageMapper {
                 .toList();
 
         pageCustom.setContent(dishes);
+        pageCustom.setTotalElements(page.getTotalElements());
+        pageCustom.setTotalPages(page.getTotalPages());
+        pageCustom.setHasNext(page.hasNext());
+        pageCustom.setHasPrevious(page.hasPrevious());
+        return pageCustom;
+    }
+
+    default PageCustom<Order> toOrderPageCustom(Page<OrderEntity> page){
+        PageCustom<Order> pageCustom = new PageCustom<>();
+        List<Order> orders = page.getContent().stream()
+                .map(ORDER_ENTITY_MAPPER::toOrder)
+                .toList();
+
+        pageCustom.setContent(orders);
         pageCustom.setTotalElements(page.getTotalElements());
         pageCustom.setTotalPages(page.getTotalPages());
         pageCustom.setHasNext(page.hasNext());

@@ -2,6 +2,7 @@ package com.restaurant.court_service.infrastructure.exceptionhandler;
 
 import com.restaurant.court_service.domain.exception.*;
 import com.restaurant.court_service.utils.Constants;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -23,6 +24,20 @@ public class ControllerAdvisor {
             ClientAlreadyHasOrderException clientAlreadyHasOrderException) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Collections.singletonMap(MESSAGE, clientAlreadyHasOrderException.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidOrderStatusException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidOrderStatusException(
+            InvalidOrderStatusException invalidOrderStatusException) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Collections.singletonMap(MESSAGE, invalidOrderStatusException.getMessage()));
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleEntityNotFoundException(
+            EntityNotFoundException entityNotFoundException) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Collections.singletonMap(MESSAGE, entityNotFoundException.getMessage()));
     }
 
     @ExceptionHandler(RestaurantDuplicateNitException.class)
