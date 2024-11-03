@@ -17,5 +17,6 @@ public class SecurityConstants {
     //Roles names
     public static final String ROLE_OWNER = "Propietario";
     public static final String ROLE_ADMIN = "Administrador";
+    public static final String ROLE_CLIENT = "Cliente";
 
 }

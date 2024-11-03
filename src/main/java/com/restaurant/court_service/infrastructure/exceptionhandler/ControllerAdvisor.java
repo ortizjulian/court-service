@@ -18,6 +18,13 @@ public class ControllerAdvisor {
 
     private static final String MESSAGE = Constants.RESPONSE_MESSAGE_KEY;
 
+    @ExceptionHandler(ClientAlreadyHasOrderException.class)
+    public ResponseEntity<Map<String, String>> handleClientAlreadyHasOrderException(
+            ClientAlreadyHasOrderException clientAlreadyHasOrderException) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Collections.singletonMap(MESSAGE, clientAlreadyHasOrderException.getMessage()));
+    }
+
     @ExceptionHandler(RestaurantDuplicateNitException.class)
     public ResponseEntity<Map<String, String>> handleRestaurantDuplicateNitException(
             RestaurantDuplicateNitException restaurantDuplicateNitException) {

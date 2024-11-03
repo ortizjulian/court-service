@@ -45,6 +45,7 @@ public class Constants {
 
     public static final String EXCEPTION_RESTAURANT_DUPLICATED_NIT = "There is already a restaurant with this NIT.";
     public static final String EXCEPTION_RESTAURANT_NOT_FOUND = "Restaurant not found with ID: ";
+
     public static final String EXCEPTION_CATEGORY_NOT_FOUND = "Category not found with ID: ";
 
     public static final String EXCEPTION_DISH_ID_MANDATORY = "The dish id is mandatory.";
@@ -56,11 +57,22 @@ public class Constants {
     public static final String EXCEPTION_DISH_RESTAURANT_MANDATORY = "The restaurant ID is mandatory.";
     public static final String EXCEPTION_DISH_CATEGORY_MANDATORY = "The category ID is mandatory.";
     public static final String EXCEPTION_DISH_NOT_FOUND = "Dish not found with ID: ";
+    public static final String EXCEPTION_DISH_NOT_FOUND_IN_RESTAURANT = "Dish not found in the restaurant with ID: ";
     public static final String EXCEPTION_DISH_UPDATE_MANDATORY_FIELDS = "At least one of price or description must be provided for update.";
 
     public static final String DEFAULT_RESTAURANT_ID = "";
     public static final String DEFAULT_CATEGORY_ID = "";
 
+    //Order
+    public static final String EXCEPTION_ORDER_RESTAURANT_ID_MANDATORY = "Restaurant ID is mandatory";
+    public static final String EXCEPTION_ORDER_DISHES_EMPTY = "The order must contain at least one dish";
+    public static final String EXCEPTION_DISH_QUANTITY_MANDATORY = "Quantity cannot be null";
+    public static final String EXCEPTION_DISH_QUANTITY_MIN = "Quantity must be at least 1";
+    public static final String EXCEPTION_CLIENT_ALREADY_HAS_ORDER = "The client already has an active order.";
+
+    public static final String PENDING = "Pending";
+    public static final String IN_PREPARATION = "Preparation";
+    public static final String READY = "Ready";
 
     //MAPPERS - ARTICLE
     public static final String RESTAURANT_ENTITY = "restaurant";
