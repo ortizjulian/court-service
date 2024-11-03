@@ -20,15 +20,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 public class DishJpaAdapter implements IDishPersistencePort {
+
     private final IDishRepository dishRepository;
     private final IRestaurantRepository restaurantRepository;
     private final ICategoryRepository categoryRepository;
     private final DishEntityMapper dishEntityMapper;
     private final PageMapper pageMapper;
+
     @Override
     public void createDish(Dish dish) {
         DishEntity dishEntity = dishEntityMapper.toEntity(dish);
@@ -95,5 +98,11 @@ public class DishJpaAdapter implements IDishPersistencePort {
         Page<DishEntity> dishPage = dishRepository.findAll(spec, pageable);
 
         return pageMapper.toDishPageCustom(dishPage);
+    }
+
+    @Override
+    public List<Dish> findDishesByRestaurantId(Long restaurantId) {
+        List<DishEntity> dishEntities = dishRepository.findByRestaurantId(restaurantId);
+        return dishEntityMapper.toDishList(dishEntities);
     }
 }

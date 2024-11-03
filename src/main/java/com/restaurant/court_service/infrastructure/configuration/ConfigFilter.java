@@ -32,10 +32,11 @@ public class ConfigFilter {
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
                                 .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/restaurant/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/dish/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/restaurant/**").hasAuthority(SecurityConstants.ROLE_CLIENT)
+                                .requestMatchers(HttpMethod.GET, "/dish/**").hasAuthority(SecurityConstants.ROLE_CLIENT)
                                 .requestMatchers("/restaurant/**").hasAuthority(SecurityConstants.ROLE_ADMIN)
                                 .requestMatchers("/dish/**").hasAuthority(SecurityConstants.ROLE_OWNER)
+                                .requestMatchers("/order/**").hasAuthority(SecurityConstants.ROLE_CLIENT)
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->
