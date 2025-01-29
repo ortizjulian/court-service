@@ -8,4 +8,5 @@ public interface IRestaurantPersistencePort {
     Boolean existById(Long id);
     Boolean existByNit(String nit);
     PageCustom<Restaurant> getAllRestaurants(Integer page, Integer size, String sortDirection, String sortBy);
+    Long employeeRestaurant(Long clientId);
 }

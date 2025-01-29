@@ -1,6 +1,9 @@
 package com.restaurant.court_service.utils;
 
 public class Constants {
+    public static final String ORDER_STATUS = "status";
+    public static final String RESTAURANT_ID = "restaurantId";
+
     private Constants () {
         throw new UnsupportedOperationException(UTILITY_CLASS_SHOULD_NOT_BE_INSTANTIATED);
     }
@@ -73,6 +76,10 @@ public class Constants {
     public static final String PENDING = "Pending";
     public static final String IN_PREPARATION = "Preparation";
     public static final String READY = "Ready";
+    public static final String CANCELED = "Canceled";
+    public static final String DELIVERED = "Delivered";
+    public static final String EXCEPTION_CLIENT_DOES_NOT_BELONG_TO_RESTAURANT = "The client does not belong to any restaurant.";
+    public static final String EXCEPTION_INVALID_ORDER_STATUS = "Invalid order status: ";
 
     //MAPPERS - ARTICLE
     public static final String RESTAURANT_ENTITY = "restaurant";

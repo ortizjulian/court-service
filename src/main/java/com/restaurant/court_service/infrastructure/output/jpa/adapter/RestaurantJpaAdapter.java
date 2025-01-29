@@ -43,4 +43,10 @@ public class RestaurantJpaAdapter implements IRestaurantPersistencePort {
         Page<RestaurantEntity> restaurantPage = restaurantRepository.findAll(pageable);
         return pageMapper.toRestaurantPageCustom(restaurantPage);
     }
+
+    @Override
+    public Long employeeRestaurant(Long clientId) {
+        return restaurantRepository.findRestaurantIdByEmployeeId(clientId)
+                .orElse(null);
+    }
 }

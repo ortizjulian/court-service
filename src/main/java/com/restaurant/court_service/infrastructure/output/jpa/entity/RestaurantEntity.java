@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "restaurant")
 @NoArgsConstructor
@@ -32,4 +34,8 @@ public class RestaurantEntity {
     @Column(nullable = false)
     private String urlLogo;
 
+    @ElementCollection
+    @CollectionTable(name = "restaurant_employees", joinColumns = @JoinColumn(name = "restaurant_id"))
+    @Column(name = "employee_id")
+    private List<Long> employeeIds;
 }

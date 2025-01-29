@@ -3,15 +3,16 @@ package com.restaurant.court_service.domain.usecase;
 import com.restaurant.court_service.domain.api.IOrderServicePort;
 import com.restaurant.court_service.domain.exception.ClientAlreadyHasOrderException;
 import com.restaurant.court_service.domain.exception.DishNotFoundException;
+import com.restaurant.court_service.domain.exception.InvalidOrderStatusException;
 import com.restaurant.court_service.domain.exception.RestaurantNotFoundException;
-import com.restaurant.court_service.domain.model.Dish;
-import com.restaurant.court_service.domain.model.OrderDish;
-import com.restaurant.court_service.domain.model.PlaceOrder;
+import com.restaurant.court_service.domain.model.*;
 import com.restaurant.court_service.domain.spi.IDishPersistencePort;
 import com.restaurant.court_service.domain.spi.IOrderPersistencePort;
 import com.restaurant.court_service.domain.spi.IRestaurantPersistencePort;
 import com.restaurant.court_service.utils.Constants;
+import jakarta.persistence.EntityNotFoundException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,6 +45,31 @@ public class OrderUseCase implements IOrderServicePort{
         placeOrder.setStatus(Constants.PENDING);
         orderPersistencePort.createOrder(placeOrder);
     }
+
+    @Override
+    public PageCustom<Order> getAllOrders(Integer page, Integer size, String orderStatus, Long clientId) {
+
+        Long restaurantId = restaurantPersistencePort.employeeRestaurant(clientId);
+
+        if (restaurantId == null) {
+            throw new EntityNotFoundException(Constants.EXCEPTION_CLIENT_DOES_NOT_BELONG_TO_RESTAURANT);
+        }
+
+        List<String> statuses = Arrays.asList(
+                Constants.PENDING,
+                Constants.IN_PREPARATION,
+                Constants.READY,
+                Constants.DELIVERED,
+                Constants.CANCELED
+        );
+
+        if (!statuses.contains(orderStatus)) {
+            throw new InvalidOrderStatusException(Constants.EXCEPTION_INVALID_ORDER_STATUS + orderStatus);
+        }
+
+        return this.orderPersistencePort.getAllOrders(page, size, orderStatus, restaurantId);
+    }
+
 
     private void validateDishInRestaurant(PlaceOrder placeOrder) {
 

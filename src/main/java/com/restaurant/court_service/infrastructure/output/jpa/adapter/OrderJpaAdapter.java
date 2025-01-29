@@ -1,17 +1,26 @@
 package com.restaurant.court_service.infrastructure.output.jpa.adapter;
 
+import com.restaurant.court_service.domain.model.Order;
 import com.restaurant.court_service.domain.model.OrderDish;
+import com.restaurant.court_service.domain.model.PageCustom;
 import com.restaurant.court_service.domain.model.PlaceOrder;
 import com.restaurant.court_service.domain.spi.IOrderPersistencePort;
+import com.restaurant.court_service.infrastructure.output.jpa.entity.DishEntity;
 import com.restaurant.court_service.infrastructure.output.jpa.entity.OrderDishesEntity;
 import com.restaurant.court_service.infrastructure.output.jpa.entity.OrderEntity;
 import com.restaurant.court_service.infrastructure.output.jpa.entity.RestaurantEntity;
+import com.restaurant.court_service.infrastructure.output.jpa.mapper.PageMapper;
 import com.restaurant.court_service.infrastructure.output.jpa.repository.IDishRepository;
 import com.restaurant.court_service.infrastructure.output.jpa.repository.IOrderDishesRepository;
 import com.restaurant.court_service.infrastructure.output.jpa.repository.IOrderRepository;
 import com.restaurant.court_service.infrastructure.output.jpa.repository.IRestaurantRepository;
 import com.restaurant.court_service.utils.Constants;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +33,7 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
     private final IOrderRepository orderRepository;
     private final IDishRepository dishRepository;
     private final IOrderDishesRepository orderDishesRepository;
-
+    private final PageMapper pageMapper;
     @Override
     public void createOrder(PlaceOrder placeOrder) {
 
@@ -56,5 +65,27 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
         List<OrderEntity> orders = orderRepository.findByClientIdAndStatusIn(clientId, statuses);
 
         return !orders.isEmpty();
+    }
+
+    @Override
+    public PageCustom<Order> getAllOrders(Integer page, Integer size, String orderStatus, Long restaurantId) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Specification<OrderEntity> spec = Specification.where(null);
+
+        if (orderStatus != null && !orderStatus.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get(Constants.ORDER_STATUS), orderStatus));
+        }
+
+        if (restaurantId != null) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get(Constants.RESTAURANT_ENTITY).get(Constants.DISH_ID), restaurantId));
+        }
+
+        Page<OrderEntity> orderPage = orderRepository.findAll(spec, pageable);
+
+        return pageMapper.toOrderPageCustom(orderPage);
     }
 }
