@@ -81,6 +81,13 @@ public class ControllerAdvisor {
                 .body(Collections.singletonMap(MESSAGE, paginationParametersInvalidException.getMessage()));
     }
 
+    @ExceptionHandler(OrderCantBeAssigned.class)
+    public ResponseEntity<Map<String, String>> handleOrderCantBeAssignedException(
+            OrderCantBeAssigned orderCantBeAssigned) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Collections.singletonMap(MESSAGE, ExceptionResponse.ORDER_CANT_BE_ASSIGNED.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException methodArgumentNotValidException) {
         Map<String, String> errors = new HashMap<>();

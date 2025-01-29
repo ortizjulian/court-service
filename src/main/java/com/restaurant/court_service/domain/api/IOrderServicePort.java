@@ -9,4 +9,6 @@ public interface IOrderServicePort {
     void placeOrder(PlaceOrder placeOrder);
 
     PageCustom<Order> getAllOrders(Integer page, Integer size, String orderStatus, Long clientId);
+
+    void assignOrder(Long employeeId, Long orderId);
 }

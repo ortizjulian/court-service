@@ -1,10 +1,7 @@
 package com.restaurant.court_service.domain.usecase;
 
 import com.restaurant.court_service.domain.api.IOrderServicePort;
-import com.restaurant.court_service.domain.exception.ClientAlreadyHasOrderException;
-import com.restaurant.court_service.domain.exception.DishNotFoundException;
-import com.restaurant.court_service.domain.exception.InvalidOrderStatusException;
-import com.restaurant.court_service.domain.exception.RestaurantNotFoundException;
+import com.restaurant.court_service.domain.exception.*;
 import com.restaurant.court_service.domain.model.*;
 import com.restaurant.court_service.domain.spi.IDishPersistencePort;
 import com.restaurant.court_service.domain.spi.IOrderPersistencePort;
@@ -69,6 +66,23 @@ public class OrderUseCase implements IOrderServicePort{
 
         return this.orderPersistencePort.getAllOrders(page, size, orderStatus, restaurantId);
     }
+
+    @Override
+    public void assignOrder(Long employeeId, Long orderId) {
+
+        if(!orderPersistencePort.existById(orderId)){
+            throw new EntityNotFoundException(Constants.EXCEPTION_ORDER_NOT_FOUND);
+        }
+
+        if(!orderPersistencePort.orderIsPending(orderId)){
+            throw new OrderCantBeAssigned();
+        }
+
+        orderPersistencePort.assignOrder(employeeId,orderId);
+
+
+    }
+
 
 
     private void validateDishInRestaurant(PlaceOrder placeOrder) {

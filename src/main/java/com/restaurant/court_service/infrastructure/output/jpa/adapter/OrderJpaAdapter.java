@@ -5,7 +5,6 @@ import com.restaurant.court_service.domain.model.OrderDish;
 import com.restaurant.court_service.domain.model.PageCustom;
 import com.restaurant.court_service.domain.model.PlaceOrder;
 import com.restaurant.court_service.domain.spi.IOrderPersistencePort;
-import com.restaurant.court_service.infrastructure.output.jpa.entity.DishEntity;
 import com.restaurant.court_service.infrastructure.output.jpa.entity.OrderDishesEntity;
 import com.restaurant.court_service.infrastructure.output.jpa.entity.OrderEntity;
 import com.restaurant.court_service.infrastructure.output.jpa.entity.RestaurantEntity;
@@ -19,12 +18,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class OrderJpaAdapter implements IOrderPersistencePort {
@@ -59,6 +58,11 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
     }
 
     @Override
+    public boolean existById(Long id) {
+        return orderRepository.existsById(id);
+    }
+
+    @Override
     public boolean clientHasAlreadyAnOrder(Long clientId) {
         List<String> statuses = Arrays.asList(Constants.PENDING, Constants.IN_PREPARATION, Constants.READY);
 
@@ -87,5 +91,24 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
         Page<OrderEntity> orderPage = orderRepository.findAll(spec, pageable);
 
         return pageMapper.toOrderPageCustom(orderPage);
+    }
+
+    @Override
+    public boolean orderIsPending(Long id) {
+        return orderRepository.existsByIdAndStatus(id,Constants.PENDING);
+    }
+
+    @Override
+    public void assignOrder(Long employeeId, Long orderId) {
+
+        Optional<OrderEntity> optionalOrder = orderRepository.findById(orderId);
+
+        if (optionalOrder.isPresent()){
+            OrderEntity order = optionalOrder.get();
+            order.setChefId(employeeId);
+            order.setStatus(Constants.IN_PREPARATION);
+            orderRepository.save(order);
+        }
+
     }
 }

@@ -34,4 +34,9 @@ public class OrderHandler implements IOrderHandler{
         return pageDtoMapper.toOrderDtoPageCustom(orderPage);
     }
 
+    @Override
+    public void assignOrder(Long employeeId, Long orderId) {
+        orderServicePort.assignOrder(employeeId,orderId);
+    }
+
 }
