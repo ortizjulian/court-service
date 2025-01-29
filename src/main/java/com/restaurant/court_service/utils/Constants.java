@@ -2,7 +2,6 @@ package com.restaurant.court_service.utils;
 
 public class Constants {
     public static final String ORDER_STATUS = "status";
-    public static final String RESTAURANT_ID = "restaurantId";
 
     private Constants () {
         throw new UnsupportedOperationException(UTILITY_CLASS_SHOULD_NOT_BE_INSTANTIATED);
@@ -69,12 +68,15 @@ public class Constants {
     //Order
     public static final String EXCEPTION_ORDER_RESTAURANT_ID_MANDATORY = "Restaurant ID is mandatory";
     public static final String EXCEPTION_ORDER_DISHES_EMPTY = "The order must contain at least one dish";
+    public static final String EXCEPTION_ORDER_NOT_FOUND = "Order not found";
     public static final String EXCEPTION_DISH_QUANTITY_MANDATORY = "Quantity cannot be null";
     public static final String EXCEPTION_DISH_QUANTITY_MIN = "Quantity must be at least 1";
     public static final String EXCEPTION_CLIENT_ALREADY_HAS_ORDER = "The client already has an active order.";
+    public static final String EXCEPTION_ORDER_CANT_BE_ASSIGNED = "The order is already in another state";
+
 
     public static final String PENDING = "Pending";
-    public static final String IN_PREPARATION = "Preparation";
+    public static final String IN_PREPARATION = "In Preparation";
     public static final String READY = "Ready";
     public static final String CANCELED = "Canceled";
     public static final String DELIVERED = "Delivered";

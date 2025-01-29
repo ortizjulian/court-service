@@ -8,4 +8,6 @@ public interface IOrderHandler {
     void placeOrder(PlaceOrderDtoRequest placeOrderDtoRequest,Long clientId);
 
     PageCustom<OrderDtoResponse> getAllOrders(Integer page, Integer size, String orderStatus, Long clientId);
+
+    void assignOrder(Long employeeId, Long orderId);
 }
