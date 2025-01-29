@@ -55,7 +55,7 @@ public class OrderRestController {
         orderHandler.assignOrder(employeeId, orderId);
         return ResponseEntity.noContent().build();
     }
-    
+
     @Operation(summary = "Retrieve all Orders By Status", description = "Returns a list of all Orders available in the system.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of Orders"),

@@ -2,12 +2,14 @@ package com.restaurant.court_service.domain.usecase;
 
 import com.restaurant.court_service.domain.exception.ClientAlreadyHasOrderException;
 import com.restaurant.court_service.domain.exception.DishNotFoundException;
+import com.restaurant.court_service.domain.exception.OrderCantBeAssigned;
 import com.restaurant.court_service.domain.exception.RestaurantNotFoundException;
 import com.restaurant.court_service.domain.model.*;
 import com.restaurant.court_service.domain.spi.IDishPersistencePort;
 import com.restaurant.court_service.domain.spi.IOrderPersistencePort;
 import com.restaurant.court_service.domain.spi.IRestaurantPersistencePort;
 import com.restaurant.court_service.utils.Constants;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -91,5 +93,33 @@ class OrderUseCaseTest {
         orderUseCase.placeOrder(placeOrder);
 
         verify(orderPersistencePort, times(1)).createOrder(placeOrder);
+    }
+
+
+
+    @Test
+    void assignOrder_WhenOrderDoesNotExist_ShouldThrowEntityNotFoundException() {
+        when(orderPersistencePort.existById(any(Long.class))).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> orderUseCase.assignOrder(1L, 1L));
+    }
+
+
+    @Test
+    void assignOrder_WhenOrderIsNotPending_ShouldThrowOrderCantBeAssigned(){
+        when(orderPersistencePort.existById(any(Long.class))).thenReturn(true);
+        when(orderPersistencePort.orderIsPending(any(Long.class))).thenReturn(false);
+
+        assertThrows(OrderCantBeAssigned.class, ()->orderUseCase.assignOrder(1L,1L));
+    }
+
+    @Test
+    void assignOrder_WhenOrderIsPending_ShouldCallAssignOrderOnPersitencePort(){
+        when(orderPersistencePort.existById(any(Long.class))).thenReturn(true);
+        when(orderPersistencePort.orderIsPending(any(Long.class))).thenReturn(true);
+        orderUseCase.assignOrder(1L,1L);
+
+        verify(orderPersistencePort, times(1)).assignOrder(1L,1L);
+
     }
 }
