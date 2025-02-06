@@ -11,10 +11,12 @@ import java.util.List;
 public class SecurityUser implements UserDetails {
     private Long id;
     private String email;
+    private String phone;
 
-    public SecurityUser(Long id, String email) {
+    public SecurityUser(Long id, String email,String phone) {
         this.id = id;
         this.email = email;
+        this.phone = phone;
     }
 
     public SecurityUser(String email) {

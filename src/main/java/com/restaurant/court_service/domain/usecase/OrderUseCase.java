@@ -3,9 +3,7 @@ package com.restaurant.court_service.domain.usecase;
 import com.restaurant.court_service.domain.api.IOrderServicePort;
 import com.restaurant.court_service.domain.exception.*;
 import com.restaurant.court_service.domain.model.*;
-import com.restaurant.court_service.domain.spi.IDishPersistencePort;
-import com.restaurant.court_service.domain.spi.IOrderPersistencePort;
-import com.restaurant.court_service.domain.spi.IRestaurantPersistencePort;
+import com.restaurant.court_service.domain.spi.*;
 import com.restaurant.court_service.utils.Constants;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -19,11 +17,15 @@ public class OrderUseCase implements IOrderServicePort{
     private final IRestaurantPersistencePort restaurantPersistencePort;
     private final IDishPersistencePort dishPersistencePort;
     private final IOrderPersistencePort orderPersistencePort;
+    private final IMessagingPersistencePort messagingPersistencePort;
+    private final IAuthenticationPersistencePort authenticationPersistencePort;
 
-    public OrderUseCase(IRestaurantPersistencePort restaurantPersistencePort, IDishPersistencePort dishPersistencePort, IOrderPersistencePort orderPersistencePort) {
+    public OrderUseCase(IRestaurantPersistencePort restaurantPersistencePort, IDishPersistencePort dishPersistencePort, IOrderPersistencePort orderPersistencePort, IMessagingPersistencePort messagingPersistencePort, IAuthenticationPersistencePort authenticationPersistencePort) {
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.dishPersistencePort = dishPersistencePort;
         this.orderPersistencePort = orderPersistencePort;
+        this.messagingPersistencePort = messagingPersistencePort;
+        this.authenticationPersistencePort = authenticationPersistencePort;
     }
 
 
@@ -74,15 +76,33 @@ public class OrderUseCase implements IOrderServicePort{
             throw new EntityNotFoundException(Constants.EXCEPTION_ORDER_NOT_FOUND);
         }
 
-        if(!orderPersistencePort.orderIsPending(orderId)){
+        if(!orderPersistencePort.checkOrderStatus(orderId, Constants.PENDING)){
             throw new OrderCantBeAssigned();
         }
 
         orderPersistencePort.assignOrder(employeeId,orderId);
 
-
     }
 
+    @Override
+    public void finishOrder(Long orderId) {
+
+        if(!orderPersistencePort.existById(orderId)){
+            throw new EntityNotFoundException(Constants.EXCEPTION_ORDER_NOT_FOUND);
+        }
+
+        if(!orderPersistencePort.checkOrderStatus(orderId, Constants.IN_PREPARATION)){
+            throw new OrderCantBeAssigned();
+        }
+
+        String phone = authenticationPersistencePort.getAuthenticatedUserPhone();
+
+        messagingPersistencePort.notifyClient(phone, orderId);
+
+        orderPersistencePort.finishOrder(orderId);
+
+
+    }
 
 
     private void validateDishInRestaurant(PlaceOrder placeOrder) {

@@ -33,6 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String userName;
         final String role;
+        final String phone;
         final Long id;
         if (authHeader == null || !authHeader.startsWith(SecurityConstants.BEARER)) {
             filterChain.doFilter(request, response);
@@ -42,11 +43,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         userName = jwtTokenManager.extractUsername(jwt);
         role = jwtTokenManager.extractRole(jwt);
         id = jwtTokenManager.extractId(jwt);
+        phone = jwtTokenManager.extractPhone(jwt);
 
         if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
-            SecurityUser securityUser = new SecurityUser(id,userName);
+            SecurityUser securityUser = new SecurityUser(id,userName,phone);
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     securityUser,
                     null,
