@@ -94,8 +94,8 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
     }
 
     @Override
-    public boolean orderIsPending(Long id) {
-        return orderRepository.existsByIdAndStatus(id,Constants.PENDING);
+    public boolean checkOrderStatus(Long id, String status) {
+        return orderRepository.existsByIdAndStatus(id,status);
     }
 
     @Override
@@ -110,5 +110,27 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
             orderRepository.save(order);
         }
 
+    }
+
+    @Override
+    public void finishOrder(Long orderId) {
+        Optional<OrderEntity> optionalOrder = orderRepository.findById(orderId);
+
+        if (optionalOrder.isPresent()){
+            OrderEntity order = optionalOrder.get();
+            order.setStatus(Constants.READY);
+            orderRepository.save(order);
+        }
+    }
+
+    @Override
+    public Long getUserIdByOrderId(Long orderId) {
+
+        Optional<OrderEntity> orderEntity = orderRepository.findById(orderId);
+
+        if (orderEntity.isPresent()) {
+            return orderEntity.get().getClientId();
+        }
+        return 0L;
     }
 }

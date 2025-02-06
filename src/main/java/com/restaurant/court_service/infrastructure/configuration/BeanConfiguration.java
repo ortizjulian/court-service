@@ -1,15 +1,12 @@
 package com.restaurant.court_service.infrastructure.configuration;
 
-import com.restaurant.court_service.domain.api.IDishServicePort;
-import com.restaurant.court_service.domain.api.IOrderServicePort;
-import com.restaurant.court_service.domain.api.IRestaurantServicePort;
-import com.restaurant.court_service.domain.spi.ICategoryPersistencePort;
-import com.restaurant.court_service.domain.spi.IDishPersistencePort;
-import com.restaurant.court_service.domain.spi.IOrderPersistencePort;
-import com.restaurant.court_service.domain.spi.IRestaurantPersistencePort;
-import com.restaurant.court_service.domain.usecase.DishUseCase;
-import com.restaurant.court_service.domain.usecase.OrderUseCase;
-import com.restaurant.court_service.domain.usecase.RestaurantUseCase;
+import com.restaurant.court_service.domain.api.*;
+import com.restaurant.court_service.domain.spi.*;
+import com.restaurant.court_service.domain.usecase.*;
+import com.restaurant.court_service.infrastructure.output.feign.adapter.MessagingFeignAdapter;
+import com.restaurant.court_service.infrastructure.output.feign.adapter.UserFeignAdapter;
+import com.restaurant.court_service.infrastructure.output.feign.client.MessagingFeignClient;
+import com.restaurant.court_service.infrastructure.output.feign.client.UserFeignClient;
 import com.restaurant.court_service.infrastructure.output.jpa.adapter.CategoryJpaAdapter;
 import com.restaurant.court_service.infrastructure.output.jpa.adapter.DishJpaAdapter;
 import com.restaurant.court_service.infrastructure.output.jpa.adapter.OrderJpaAdapter;
@@ -18,6 +15,8 @@ import com.restaurant.court_service.infrastructure.output.jpa.mapper.DishEntityM
 import com.restaurant.court_service.infrastructure.output.jpa.mapper.PageMapper;
 import com.restaurant.court_service.infrastructure.output.jpa.mapper.RestaurantEntityMapper;
 import com.restaurant.court_service.infrastructure.output.jpa.repository.*;
+import com.restaurant.court_service.infrastructure.output.security.adapter.AuthenticationAdapter;
+import com.restaurant.court_service.infrastructure.output.security.adapter.SecurityAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +24,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 public class BeanConfiguration {
+
+    private final MessagingFeignClient messagingFeignClient;
+    private final UserFeignClient userFeignClient;
 
     private final IRestaurantRepository restaurantRepository;
     private final RestaurantEntityMapper restaurantEntityMapper;
@@ -59,17 +61,45 @@ public class BeanConfiguration {
     }
 
     @Bean
+    public IMessagingPersistencePort messagingPersistencePort(){
+        return new MessagingFeignAdapter(messagingFeignClient);
+    }
+
+    @Bean IUserPersistencePort userPersistencePort(){
+        return new UserFeignAdapter(userFeignClient);
+    }
+
+    @Bean
     public IRestaurantServicePort categoryServicePort(){
         return new RestaurantUseCase(restaurantPersistencePort());
     }
 
     @Bean
     public IOrderServicePort orderServicePort(){
-        return new OrderUseCase(restaurantPersistencePort(),dishPersistencePort(),orderPersistencePort());
+        return new OrderUseCase(restaurantPersistencePort(),dishPersistencePort(),orderPersistencePort(),messagingPersistencePort(),userPersistencePort());
     }
 
     @Bean
     public IOrderPersistencePort orderPersistencePort(){
         return new OrderJpaAdapter(restaurantRepository,orderRepository,dishRepository,orderDishesRepository,pageMapper);
+    }
+
+    @Bean
+    public ISecurityServicePort securityServicePort() {
+        return new SecurityUseCase(securityPersistencePort());
+    }
+
+    @Bean
+    public ISecurityPersistencePort securityPersistencePort(){
+        return new SecurityAdapter();
+    }
+
+    @Bean public IAuthenticationServicePort authenticationServicePort(){
+        return new AuthenticationUseCase(authenticationPersistencePort());
+    }
+
+    @Bean
+    public IAuthenticationPersistencePort authenticationPersistencePort(){
+        return new AuthenticationAdapter();
     }
 }

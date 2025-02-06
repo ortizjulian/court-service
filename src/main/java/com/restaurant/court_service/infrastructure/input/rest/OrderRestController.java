@@ -3,9 +3,11 @@ package com.restaurant.court_service.infrastructure.input.rest;
 import com.restaurant.court_service.application.dto.OrderDtoResponse;
 import com.restaurant.court_service.application.dto.PlaceOrderDtoRequest;
 import com.restaurant.court_service.application.handler.IOrderHandler;
+import com.restaurant.court_service.application.handler.ISecurityHandler;
+import com.restaurant.court_service.domain.api.IAuthenticationServicePort;
 import com.restaurant.court_service.domain.model.PageCustom;
-import com.restaurant.court_service.infrastructure.output.security.AuthenticationService;
 import com.restaurant.court_service.utils.Constants;
+import com.restaurant.court_service.utils.SecurityConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -21,7 +23,9 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class OrderRestController {
     private final IOrderHandler orderHandler;
-    private final AuthenticationService authenticationService;
+    private final ISecurityHandler securityHandler;
+    private final IAuthenticationServicePort authenticationServicePort;
+
     @Operation(
             summary = "Place a new order",
             description = "Allows an authenticated client to place a new order in the system."
@@ -35,7 +39,7 @@ public class OrderRestController {
     })
     @PostMapping("/place")
     public ResponseEntity<Void> placeOrder(@Valid @RequestBody PlaceOrderDtoRequest placeOrderDtoRequest) {
-        Long clientId = authenticationService.getAuthenticatedUserId();
+        Long clientId = authenticationServicePort.getAuthenticatedUserId();
         orderHandler.placeOrder(placeOrderDtoRequest, clientId);
         return ResponseEntity.noContent().build();
     }
@@ -51,9 +55,29 @@ public class OrderRestController {
     })
     @PatchMapping("/assign/{orderId}")
     public ResponseEntity<Void> assignOrder(@PathVariable Long orderId) {
-        Long employeeId = authenticationService.getAuthenticatedUserId();
+        Long employeeId = authenticationServicePort.getAuthenticatedUserId();
         orderHandler.assignOrder(employeeId, orderId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Finish an order",
+            description = "Allows an authenticated employee to mark an order as finished once the order is completed."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Order marked as finished successfully"),
+            @ApiResponse(responseCode = "404", description = "Order not found"),
+            @ApiResponse(responseCode = "409", description = "Order cannot be finished because it is already in a final state")
+    })
+    @PatchMapping("/finish/{orderId}")
+    public ResponseEntity<Void> finishOrder(@PathVariable Long orderId,@RequestHeader(SecurityConstants.AUTHORIZATION) String token) {
+        try {
+            securityHandler.setToken(token);
+            orderHandler.finishOrder(orderId);
+            return ResponseEntity.noContent().build();
+        } finally {
+            securityHandler.removeToken();
+        }
     }
 
     @Operation(summary = "Retrieve all Orders By Status", description = "Returns a list of all Orders available in the system.")
@@ -66,7 +90,7 @@ public class OrderRestController {
             @RequestParam(defaultValue = Constants.DEFAULT_SIZE) Integer size,
             @RequestParam() String  orderStatus){
 
-        Long clientId = authenticationService.getAuthenticatedUserId();
+        Long clientId = authenticationServicePort.getAuthenticatedUserId();
         return ResponseEntity.ok(orderHandler.getAllOrders(page,size,orderStatus,clientId));
     }
 

@@ -10,4 +10,6 @@ public interface IOrderHandler {
     PageCustom<OrderDtoResponse> getAllOrders(Integer page, Integer size, String orderStatus, Long clientId);
 
     void assignOrder(Long employeeId, Long orderId);
+
+    void finishOrder(Long orderId);
 }

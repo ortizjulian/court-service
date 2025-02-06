@@ -1,13 +1,8 @@
 package com.restaurant.court_service.domain.usecase;
 
-import com.restaurant.court_service.domain.exception.ClientAlreadyHasOrderException;
-import com.restaurant.court_service.domain.exception.DishNotFoundException;
-import com.restaurant.court_service.domain.exception.OrderCantBeAssigned;
-import com.restaurant.court_service.domain.exception.RestaurantNotFoundException;
+import com.restaurant.court_service.domain.exception.*;
 import com.restaurant.court_service.domain.model.*;
-import com.restaurant.court_service.domain.spi.IDishPersistencePort;
-import com.restaurant.court_service.domain.spi.IOrderPersistencePort;
-import com.restaurant.court_service.domain.spi.IRestaurantPersistencePort;
+import com.restaurant.court_service.domain.spi.*;
 import com.restaurant.court_service.utils.Constants;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +15,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class OrderUseCaseTest {
@@ -34,6 +29,12 @@ class OrderUseCaseTest {
     @Mock
     private IOrderPersistencePort orderPersistencePort;
 
+    @Mock
+    private IUserPersistencePort userPersistencePort;
+
+    @Mock
+    private IMessagingPersistencePort messagingPersistencePort;
+
     @InjectMocks
     private OrderUseCase orderUseCase;
 
@@ -45,7 +46,7 @@ class OrderUseCaseTest {
     PlaceOrder placeOrder = new PlaceOrder(
             1L,
             Arrays.asList(new OrderDish(1L, 2), new OrderDish(2L, 1)),
-            "Pending",
+            Constants.PENDING,
             1L
     );
 
@@ -95,6 +96,43 @@ class OrderUseCaseTest {
         verify(orderPersistencePort, times(1)).createOrder(placeOrder);
     }
 
+    @Test
+    void getAllOrders_WhenClientDoesNotBelongToRestaurant_ShouldThrowEntityNotFoundException() {
+        Long clientId = 1L;
+        String orderStatus = Constants.PENDING;
+        when(restaurantPersistencePort.employeeRestaurant(clientId)).thenReturn(null);
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            orderUseCase.getAllOrders(0, 10, orderStatus, clientId);
+        });
+    }
+
+    @Test
+    void getAllOrders_WhenOrderStatusIsInvalid_ShouldThrowInvalidOrderStatusException() {
+        Long clientId = 1L;
+        String invalidOrderStatus = "INVALID_STATUS";
+        when(restaurantPersistencePort.employeeRestaurant(clientId)).thenReturn(1L);
+
+        assertThrows(InvalidOrderStatusException.class, () -> {
+            orderUseCase.getAllOrders(0, 10, invalidOrderStatus, clientId);
+        });
+    }
+
+    @Test
+    void getAllOrders_WhenValidClientAndOrderStatus_ShouldReturnPageOfOrders() {
+        Long clientId = 1L;
+        String orderStatus = Constants.PENDING;
+        Long restaurantId = 1L;
+        PageCustom<Order> expectedPage = new PageCustom<>();
+
+        when(restaurantPersistencePort.employeeRestaurant(clientId)).thenReturn(restaurantId);
+        when(orderPersistencePort.getAllOrders(0, 10, orderStatus, restaurantId)).thenReturn(expectedPage);
+
+        PageCustom<Order> result = orderUseCase.getAllOrders(0, 10, orderStatus, clientId);
+
+        assertNotNull(result);
+        assertEquals(expectedPage, result);
+    }
 
 
     @Test
@@ -108,18 +146,59 @@ class OrderUseCaseTest {
     @Test
     void assignOrder_WhenOrderIsNotPending_ShouldThrowOrderCantBeAssigned(){
         when(orderPersistencePort.existById(any(Long.class))).thenReturn(true);
-        when(orderPersistencePort.orderIsPending(any(Long.class))).thenReturn(false);
+        when(orderPersistencePort.checkOrderStatus(any(Long.class),eq(Constants.PENDING))).thenReturn(false);
 
         assertThrows(OrderCantBeAssigned.class, ()->orderUseCase.assignOrder(1L,1L));
     }
 
     @Test
-    void assignOrder_WhenOrderIsPending_ShouldCallAssignOrderOnPersitencePort(){
+    void assignOrder_WhenOrderIsPending_ShouldCallAssignOrderOnPersistencePort(){
         when(orderPersistencePort.existById(any(Long.class))).thenReturn(true);
-        when(orderPersistencePort.orderIsPending(any(Long.class))).thenReturn(true);
+        when(orderPersistencePort.checkOrderStatus(any(Long.class),eq(Constants.PENDING))).thenReturn(true);
         orderUseCase.assignOrder(1L,1L);
 
         verify(orderPersistencePort, times(1)).assignOrder(1L,1L);
 
     }
+
+    @Test
+    void finishOrder_WhenOrderNotFound_ShouldThrowEntityNotFoundException() {
+        Long orderId = 1L;
+        when(orderPersistencePort.existById(orderId)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            orderUseCase.finishOrder(orderId);
+        });
+    }
+
+    @Test
+    void finishOrder_WhenOrderStatusIsNotInPreparation_ShouldThrowOrderCantBeAssigned() {
+
+        Long orderId = 1L;
+        when(orderPersistencePort.existById(orderId)).thenReturn(true);
+        when(orderPersistencePort.checkOrderStatus(orderId, Constants.IN_PREPARATION)).thenReturn(false);
+
+        assertThrows(OrderCantBeAssigned.class, () -> {
+            orderUseCase.finishOrder(orderId);
+        });
+    }
+
+    @Test
+    void finishOrder_WhenOrderCanBeFinished_ShouldFinishOrder() {
+        Long orderId = 1L;
+        Long userId = 2L;
+        String phone = "123456789";
+
+        when(orderPersistencePort.existById(orderId)).thenReturn(true);
+        when(orderPersistencePort.checkOrderStatus(orderId, Constants.IN_PREPARATION)).thenReturn(true);
+        when(orderPersistencePort.getUserIdByOrderId(orderId)).thenReturn(userId);
+        when(userPersistencePort.getUserPhoneNumber(userId)).thenReturn(phone);
+
+        orderUseCase.finishOrder(orderId);
+
+        verify(messagingPersistencePort).notifyClient(phone, orderId);
+        verify(orderPersistencePort).finishOrder(orderId);
+    }
+
+
 }
