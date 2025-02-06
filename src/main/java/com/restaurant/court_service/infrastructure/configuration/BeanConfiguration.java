@@ -4,7 +4,9 @@ import com.restaurant.court_service.domain.api.*;
 import com.restaurant.court_service.domain.spi.*;
 import com.restaurant.court_service.domain.usecase.*;
 import com.restaurant.court_service.infrastructure.output.feign.adapter.MessagingFeignAdapter;
+import com.restaurant.court_service.infrastructure.output.feign.adapter.UserFeignAdapter;
 import com.restaurant.court_service.infrastructure.output.feign.client.MessagingFeignClient;
+import com.restaurant.court_service.infrastructure.output.feign.client.UserFeignClient;
 import com.restaurant.court_service.infrastructure.output.jpa.adapter.CategoryJpaAdapter;
 import com.restaurant.court_service.infrastructure.output.jpa.adapter.DishJpaAdapter;
 import com.restaurant.court_service.infrastructure.output.jpa.adapter.OrderJpaAdapter;
@@ -24,6 +26,8 @@ import org.springframework.context.annotation.Configuration;
 public class BeanConfiguration {
 
     private final MessagingFeignClient messagingFeignClient;
+    private final UserFeignClient userFeignClient;
+
     private final IRestaurantRepository restaurantRepository;
     private final RestaurantEntityMapper restaurantEntityMapper;
     private final PageMapper pageMapper;
@@ -61,6 +65,10 @@ public class BeanConfiguration {
         return new MessagingFeignAdapter(messagingFeignClient);
     }
 
+    @Bean IUserPersistencePort userPersistencePort(){
+        return new UserFeignAdapter(userFeignClient);
+    }
+
     @Bean
     public IRestaurantServicePort categoryServicePort(){
         return new RestaurantUseCase(restaurantPersistencePort());
@@ -68,7 +76,7 @@ public class BeanConfiguration {
 
     @Bean
     public IOrderServicePort orderServicePort(){
-        return new OrderUseCase(restaurantPersistencePort(),dishPersistencePort(),orderPersistencePort(),messagingPersistencePort(),authenticationPersistencePort());
+        return new OrderUseCase(restaurantPersistencePort(),dishPersistencePort(),orderPersistencePort(),messagingPersistencePort(),userPersistencePort());
     }
 
     @Bean

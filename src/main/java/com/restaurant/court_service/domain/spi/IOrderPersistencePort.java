@@ -15,4 +15,6 @@ public interface IOrderPersistencePort {
     void assignOrder(Long employeeId, Long orderId);
 
     void finishOrder(Long orderId);
+
+    Long getUserIdByOrderId(Long orderId);
 }

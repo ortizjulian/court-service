@@ -18,14 +18,15 @@ public class OrderUseCase implements IOrderServicePort{
     private final IDishPersistencePort dishPersistencePort;
     private final IOrderPersistencePort orderPersistencePort;
     private final IMessagingPersistencePort messagingPersistencePort;
-    private final IAuthenticationPersistencePort authenticationPersistencePort;
+    private final IUserPersistencePort userPersistencePort;
 
-    public OrderUseCase(IRestaurantPersistencePort restaurantPersistencePort, IDishPersistencePort dishPersistencePort, IOrderPersistencePort orderPersistencePort, IMessagingPersistencePort messagingPersistencePort, IAuthenticationPersistencePort authenticationPersistencePort) {
+
+    public OrderUseCase(IRestaurantPersistencePort restaurantPersistencePort, IDishPersistencePort dishPersistencePort, IOrderPersistencePort orderPersistencePort, IMessagingPersistencePort messagingPersistencePort, IUserPersistencePort userPersistencePort) {
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.dishPersistencePort = dishPersistencePort;
         this.orderPersistencePort = orderPersistencePort;
         this.messagingPersistencePort = messagingPersistencePort;
-        this.authenticationPersistencePort = authenticationPersistencePort;
+        this.userPersistencePort = userPersistencePort;
     }
 
 
@@ -95,7 +96,8 @@ public class OrderUseCase implements IOrderServicePort{
             throw new OrderCantBeAssigned();
         }
 
-        String phone = authenticationPersistencePort.getAuthenticatedUserPhone();
+        Long userId = orderPersistencePort.getUserIdByOrderId(orderId);
+        String phone = userPersistencePort.getUserPhoneNumber(userId);
 
         messagingPersistencePort.notifyClient(phone, orderId);
 
