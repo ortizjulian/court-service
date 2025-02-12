@@ -1,6 +1,7 @@
 package com.restaurant.court_service.infrastructure.exceptionhandler;
 
 import com.restaurant.court_service.domain.exception.*;
+import com.restaurant.court_service.infrastructure.output.feign.exceptions.ConflictException;
 import com.restaurant.court_service.utils.Constants;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,13 @@ public class ControllerAdvisor {
             ClientAlreadyHasOrderException clientAlreadyHasOrderException) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Collections.singletonMap(MESSAGE, clientAlreadyHasOrderException.getMessage()));
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<Map<String, String>> handleConflictException(
+            ConflictException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Collections.singletonMap(MESSAGE, ex.getMessage()));
     }
 
     @ExceptionHandler(InvalidOrderStatusException.class)

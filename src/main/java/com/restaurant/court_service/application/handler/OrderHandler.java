@@ -44,4 +44,9 @@ public class OrderHandler implements IOrderHandler{
         orderServicePort.finishOrder(orderId);
     }
 
+    @Override
+    public void deliverOrder(Long orderId, String code) {
+        orderServicePort.deliverOrder(orderId,code);
+    }
+
 }

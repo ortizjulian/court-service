@@ -67,13 +67,37 @@ public class OrderRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Order marked as finished successfully"),
             @ApiResponse(responseCode = "404", description = "Order not found"),
-            @ApiResponse(responseCode = "409", description = "Order cannot be finished because it is already in a final state")
+            @ApiResponse(responseCode = "409", description = "Order cannot be finished because it is already in another state")
     })
     @PatchMapping("/finish/{orderId}")
     public ResponseEntity<Void> finishOrder(@PathVariable Long orderId,@RequestHeader(SecurityConstants.AUTHORIZATION) String token) {
         try {
             securityHandler.setToken(token);
             orderHandler.finishOrder(orderId);
+            return ResponseEntity.noContent().build();
+        } finally {
+            securityHandler.removeToken();
+        }
+    }
+
+    @Operation(
+            summary = "Deliver an order",
+            description = "Allows an authenticated employee to deliver an order."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Order marked as delivered successfully"),
+            @ApiResponse(responseCode = "404", description = "Order not found"),
+            @ApiResponse(responseCode = "409", description = "Order cannot be finished because it is already in another state")
+    })
+    @PatchMapping("/deliver/{orderId}")
+    public ResponseEntity<Void> deliverOrder(
+            @PathVariable Long orderId,
+            @RequestHeader(SecurityConstants.AUTHORIZATION) String token,
+            @RequestParam String code
+    ) {
+        try {
+            securityHandler.setToken(token);
+            orderHandler.deliverOrder(orderId, code);
             return ResponseEntity.noContent().build();
         } finally {
             securityHandler.removeToken();

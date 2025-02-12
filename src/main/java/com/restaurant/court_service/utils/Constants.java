@@ -80,7 +80,7 @@ public class Constants {
     public static final String READY = "Ready";
     public static final String CANCELED = "Canceled";
     public static final String DELIVERED = "Delivered";
-    public static final String EXCEPTION_CLIENT_DOES_NOT_BELONG_TO_RESTAURANT = "The client does not belong to any restaurant.";
+    public static final String EXCEPTION_EMPLOYEE_DOES_NOT_BELONG_TO_RESTAURANT = "The employee does not belong to any restaurant.";
     public static final String EXCEPTION_INVALID_ORDER_STATUS = "Invalid order status: ";
 
     //MAPPERS - ARTICLE

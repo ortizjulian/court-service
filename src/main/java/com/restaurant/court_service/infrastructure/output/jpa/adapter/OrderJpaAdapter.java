@@ -133,4 +133,15 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
         }
         return 0L;
     }
+
+    @Override
+    public void deliverOrder(Long orderId) {
+        Optional<OrderEntity> optionalOrder = orderRepository.findById(orderId);
+
+        if (optionalOrder.isPresent()){
+            OrderEntity order = optionalOrder.get();
+            order.setStatus(Constants.DELIVERED);
+            orderRepository.save(order);
+        }
+    }
 }
