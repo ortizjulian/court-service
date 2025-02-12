@@ -38,10 +38,16 @@ public class OrderRestController {
 
     })
     @PostMapping("/place")
-    public ResponseEntity<Void> placeOrder(@Valid @RequestBody PlaceOrderDtoRequest placeOrderDtoRequest) {
-        Long clientId = authenticationServicePort.getAuthenticatedUserId();
-        orderHandler.placeOrder(placeOrderDtoRequest, clientId);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> placeOrder(@Valid @RequestBody PlaceOrderDtoRequest placeOrderDtoRequest,@RequestHeader(SecurityConstants.AUTHORIZATION) String token) {
+
+        try {
+            securityHandler.setToken(token);
+            Long clientId = authenticationServicePort.getAuthenticatedUserId();
+            orderHandler.placeOrder(placeOrderDtoRequest, clientId);
+            return ResponseEntity.noContent().build();
+        } finally {
+            securityHandler.removeToken();
+        }
     }
 
     @Operation(

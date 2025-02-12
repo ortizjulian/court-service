@@ -1,17 +1,21 @@
 package com.restaurant.court_service.infrastructure.configuration;
 
 import com.restaurant.court_service.domain.api.*;
+import com.restaurant.court_service.domain.model.Traceability;
 import com.restaurant.court_service.domain.spi.*;
 import com.restaurant.court_service.domain.usecase.*;
 import com.restaurant.court_service.infrastructure.output.feign.adapter.MessagingFeignAdapter;
+import com.restaurant.court_service.infrastructure.output.feign.adapter.TraceabilityFeignAdapter;
 import com.restaurant.court_service.infrastructure.output.feign.adapter.UserFeignAdapter;
 import com.restaurant.court_service.infrastructure.output.feign.client.MessagingFeignClient;
+import com.restaurant.court_service.infrastructure.output.feign.client.TraceabilityFeignClient;
 import com.restaurant.court_service.infrastructure.output.feign.client.UserFeignClient;
 import com.restaurant.court_service.infrastructure.output.jpa.adapter.CategoryJpaAdapter;
 import com.restaurant.court_service.infrastructure.output.jpa.adapter.DishJpaAdapter;
 import com.restaurant.court_service.infrastructure.output.jpa.adapter.OrderJpaAdapter;
 import com.restaurant.court_service.infrastructure.output.jpa.adapter.RestaurantJpaAdapter;
 import com.restaurant.court_service.infrastructure.output.jpa.mapper.DishEntityMapper;
+import com.restaurant.court_service.infrastructure.output.jpa.mapper.OrderEntityMapper;
 import com.restaurant.court_service.infrastructure.output.jpa.mapper.PageMapper;
 import com.restaurant.court_service.infrastructure.output.jpa.mapper.RestaurantEntityMapper;
 import com.restaurant.court_service.infrastructure.output.jpa.repository.*;
@@ -39,6 +43,9 @@ public class BeanConfiguration {
 
     private final IOrderRepository orderRepository;
     private final IOrderDishesRepository orderDishesRepository;
+    private final OrderEntityMapper orderEntityMapper;
+
+    private final TraceabilityFeignClient traceabilityFeignClient;
 
     @Bean
     public ICategoryPersistencePort categoryPersistencePort(){
@@ -75,13 +82,18 @@ public class BeanConfiguration {
     }
 
     @Bean
+    public ITraceabilityPersistencePort traceabilityPersistencePort(){
+        return new TraceabilityFeignAdapter(traceabilityFeignClient);
+    }
+
+    @Bean
     public IOrderServicePort orderServicePort(){
-        return new OrderUseCase(restaurantPersistencePort(),dishPersistencePort(),orderPersistencePort(),messagingPersistencePort(),userPersistencePort());
+        return new OrderUseCase(restaurantPersistencePort(),dishPersistencePort(),orderPersistencePort(),messagingPersistencePort(),userPersistencePort(), authenticationPersistencePort(),traceabilityPersistencePort());
     }
 
     @Bean
     public IOrderPersistencePort orderPersistencePort(){
-        return new OrderJpaAdapter(restaurantRepository,orderRepository,dishRepository,orderDishesRepository,pageMapper);
+        return new OrderJpaAdapter(restaurantRepository,orderRepository,dishRepository,orderDishesRepository,pageMapper,orderEntityMapper);
     }
 
     @Bean

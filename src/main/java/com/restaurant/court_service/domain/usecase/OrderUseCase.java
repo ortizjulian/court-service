@@ -19,13 +19,17 @@ public class OrderUseCase implements IOrderServicePort{
     private final IOrderPersistencePort orderPersistencePort;
     private final IMessagingPersistencePort messagingPersistencePort;
     private final IUserPersistencePort userPersistencePort;
+    private final IAuthenticationPersistencePort authenticationPersistencePort;
+    private final ITraceabilityPersistencePort traceabilityPersistencePort;
 
-    public OrderUseCase(IRestaurantPersistencePort restaurantPersistencePort, IDishPersistencePort dishPersistencePort, IOrderPersistencePort orderPersistencePort, IMessagingPersistencePort messagingPersistencePort, IUserPersistencePort userPersistencePort) {
+    public OrderUseCase(IRestaurantPersistencePort restaurantPersistencePort, IDishPersistencePort dishPersistencePort, IOrderPersistencePort orderPersistencePort, IMessagingPersistencePort messagingPersistencePort, IUserPersistencePort userPersistencePort, IAuthenticationPersistencePort authenticationPersistencePort, ITraceabilityPersistencePort traceabilityPersistencePort) {
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.dishPersistencePort = dishPersistencePort;
         this.orderPersistencePort = orderPersistencePort;
         this.messagingPersistencePort = messagingPersistencePort;
         this.userPersistencePort = userPersistencePort;
+        this.authenticationPersistencePort = authenticationPersistencePort;
+        this.traceabilityPersistencePort = traceabilityPersistencePort;
     }
 
     @Override
@@ -41,7 +45,13 @@ public class OrderUseCase implements IOrderServicePort{
 
         validateDishInRestaurant(placeOrder);
         placeOrder.setStatus(Constants.PENDING);
-        orderPersistencePort.createOrder(placeOrder);
+
+        Order order= orderPersistencePort.createOrder(placeOrder);
+        String email = authenticationPersistencePort.getAuthenticatedUserEMail();
+        Traceability traceability = new Traceability(order.getId(),placeOrder.getClientId().toString(), email);
+
+        traceabilityPersistencePort.createTraceability(traceability);
+
     }
 
     @Override
