@@ -9,14 +9,11 @@ public interface IOrderPersistencePort {
     boolean existById(Long id);
     boolean clientHasAlreadyAnOrder(Long clientId);
     PageCustom<Order> getAllOrders(Integer page, Integer size, String orderStatus, Long restaurantId);
-
     boolean checkOrderStatus(Long id,String status);
-
     void assignOrder(Long employeeId, Long orderId);
-
     void finishOrder(Long orderId);
-
     Long getUserIdByOrderId(Long orderId);
-
     void deliverOrder(Long orderId);
+    void cancelOrder(Long orderId);
+    boolean existByIdAndClientId(Long orderId, Long clientId);
 }

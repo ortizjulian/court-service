@@ -104,6 +104,24 @@ public class OrderRestController {
         }
     }
 
+    @Operation(
+            summary = "Cancel an order",
+            description = "Allows a client to cancel an order."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Order canceled"),
+            @ApiResponse(responseCode = "404", description = "Order not found"),
+
+    })
+    @PatchMapping("/cancel/{orderId}")
+    public ResponseEntity<Void> cancelOrder(
+            @PathVariable Long orderId
+    ) {
+        Long clientId = authenticationServicePort.getAuthenticatedUserId();
+        orderHandler.cancelOrder(orderId,clientId);
+        return  ResponseEntity.noContent().build();
+    }
+
     @Operation(summary = "Retrieve all Orders By Status", description = "Returns a list of all Orders available in the system.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of Orders"),

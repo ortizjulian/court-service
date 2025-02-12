@@ -20,7 +20,6 @@ public class OrderUseCase implements IOrderServicePort{
     private final IMessagingPersistencePort messagingPersistencePort;
     private final IUserPersistencePort userPersistencePort;
 
-
     public OrderUseCase(IRestaurantPersistencePort restaurantPersistencePort, IDishPersistencePort dishPersistencePort, IOrderPersistencePort orderPersistencePort, IMessagingPersistencePort messagingPersistencePort, IUserPersistencePort userPersistencePort) {
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.dishPersistencePort = dishPersistencePort;
@@ -28,7 +27,6 @@ public class OrderUseCase implements IOrderServicePort{
         this.messagingPersistencePort = messagingPersistencePort;
         this.userPersistencePort = userPersistencePort;
     }
-
 
     @Override
     public void placeOrder(PlaceOrder placeOrder) {
@@ -55,15 +53,7 @@ public class OrderUseCase implements IOrderServicePort{
             throw new EntityNotFoundException(Constants.EXCEPTION_EMPLOYEE_DOES_NOT_BELONG_TO_RESTAURANT);
         }
 
-        List<String> statuses = Arrays.asList(
-                Constants.PENDING,
-                Constants.IN_PREPARATION,
-                Constants.READY,
-                Constants.DELIVERED,
-                Constants.CANCELED
-        );
-
-        if (!statuses.contains(orderStatus)) {
+        if (!Constants.statuses.contains(orderStatus)) {
             throw new InvalidOrderStatusException(Constants.EXCEPTION_INVALID_ORDER_STATUS + orderStatus);
         }
 
@@ -119,6 +109,23 @@ public class OrderUseCase implements IOrderServicePort{
 
         orderPersistencePort.deliverOrder(orderId);
 
+    }
+
+    @Override
+    public void cancelOrder(Long orderId, Long clientId) {
+        if(!orderPersistencePort.existById(orderId)){
+            throw new EntityNotFoundException(Constants.EXCEPTION_ORDER_NOT_FOUND);
+        }
+
+        if (!orderPersistencePort.existByIdAndClientId(orderId,clientId)){
+            throw new EntityNotFoundException(Constants.NOT_AUTHORIZED_TO_ACCESS_ORDER);
+        }
+
+        if(!orderPersistencePort.checkOrderStatus(orderId, Constants.PENDING)){
+            throw new OrderIsAlreadyInPreparationException();
+        }
+
+        orderPersistencePort.cancelOrder(orderId);
     }
 
 

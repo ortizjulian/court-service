@@ -9,4 +9,5 @@ import java.util.List;
 public interface IOrderRepository extends JpaRepository<OrderEntity,Long>, JpaSpecificationExecutor<OrderEntity> {
     List<OrderEntity> findByClientIdAndStatusIn(Long clientId, List<String> statuses);
     boolean existsByIdAndStatus(Long id, String status);
+    boolean existsByIdAndClientId(Long orderId, Long clientId);
 }
