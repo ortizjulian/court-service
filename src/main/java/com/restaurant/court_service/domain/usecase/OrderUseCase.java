@@ -52,7 +52,7 @@ public class OrderUseCase implements IOrderServicePort{
         Long restaurantId = restaurantPersistencePort.employeeRestaurant(clientId);
 
         if (restaurantId == null) {
-            throw new EntityNotFoundException(Constants.EXCEPTION_CLIENT_DOES_NOT_BELONG_TO_RESTAURANT);
+            throw new EntityNotFoundException(Constants.EXCEPTION_EMPLOYEE_DOES_NOT_BELONG_TO_RESTAURANT);
         }
 
         List<String> statuses = Arrays.asList(
@@ -102,6 +102,22 @@ public class OrderUseCase implements IOrderServicePort{
         messagingPersistencePort.notifyClient(phone, orderId);
 
         orderPersistencePort.finishOrder(orderId);
+
+    }
+
+    @Override
+    public void deliverOrder(Long orderId, String code) {
+        if(!orderPersistencePort.existById(orderId)){
+            throw new EntityNotFoundException(Constants.EXCEPTION_ORDER_NOT_FOUND);
+        }
+
+        if(!orderPersistencePort.checkOrderStatus(orderId, Constants.READY)){
+            throw new OrderCantBeAssigned();
+        }
+
+        messagingPersistencePort.checkCode(orderId,code);
+
+        orderPersistencePort.deliverOrder(orderId);
 
     }
 

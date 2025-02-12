@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
@@ -200,5 +199,43 @@ class OrderUseCaseTest {
         verify(orderPersistencePort).finishOrder(orderId);
     }
 
+    @Test
+    void deliverOrder_WhenOrderNotFound_ShouldThrowEntityNotFoundException() {
+        Long orderId = 1L;
+        String code= "2020";
+        when(orderPersistencePort.existById(orderId)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            orderUseCase.deliverOrder(orderId,code);
+        });
+    }
+
+    @Test
+    void deliverOrder_WhenOrderStatusIsNotInReady_ShouldThrowOrderCantBeAssigned() {
+
+        Long orderId = 1L;
+        String code= "2020";
+        when(orderPersistencePort.existById(orderId)).thenReturn(true);
+        when(orderPersistencePort.checkOrderStatus(orderId, Constants.READY)).thenReturn(false);
+
+        assertThrows(OrderCantBeAssigned.class, () -> {
+            orderUseCase.deliverOrder(orderId,code);
+        });
+    }
+
+    @Test
+    void deliverOrder_WhenOrderIsReady_ShouldDeliverOrder() {
+        Long orderId = 1L;
+        String code= "2020";
+
+        when(orderPersistencePort.existById(orderId)).thenReturn(true);
+        when(orderPersistencePort.checkOrderStatus(orderId, Constants.READY)).thenReturn(true);
+
+
+        orderUseCase.deliverOrder(orderId,code);
+
+        verify(messagingPersistencePort).checkCode(orderId, code);
+        verify(orderPersistencePort).deliverOrder(orderId);
+    }
 
 }

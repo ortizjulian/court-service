@@ -18,4 +18,9 @@ public class MessagingFeignAdapter implements IMessagingPersistencePort {
 
         messagingFeignClient.notifyClient(notifyClientDto);
     }
+
+    @Override
+    public void checkCode(Long orderId, String code) {
+        messagingFeignClient.verifyCode(orderId,code);
+    }
 }

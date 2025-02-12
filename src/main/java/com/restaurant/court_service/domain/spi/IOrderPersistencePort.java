@@ -17,4 +17,6 @@ public interface IOrderPersistencePort {
     void finishOrder(Long orderId);
 
     Long getUserIdByOrderId(Long orderId);
+
+    void deliverOrder(Long orderId);
 }

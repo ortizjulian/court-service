@@ -3,6 +3,7 @@ package com.restaurant.court_service.infrastructure.output.feign.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.restaurant.court_service.infrastructure.output.feign.dto.ExceptionMessage;
 import com.restaurant.court_service.infrastructure.output.feign.exceptions.BadRequestException;
+import com.restaurant.court_service.infrastructure.output.feign.exceptions.ConflictException;
 import com.restaurant.court_service.infrastructure.output.feign.exceptions.InternalServerErrorException;
 import com.restaurant.court_service.infrastructure.output.feign.exceptions.NotFoundException;
 import com.restaurant.court_service.utils.FeignConstants;
@@ -27,6 +28,8 @@ public class RetreiveMessageErrorDecoder implements ErrorDecoder {
         switch (response.status()) {
             case FeignConstants.BAD_REQUEST_CODE:
                 return new BadRequestException(message != null ? message.getMessage() : FeignConstants.BAD_REQUEST);
+            case FeignConstants.CONFLICT_CODE:
+                return new ConflictException(message != null ? message.getMessage() : FeignConstants.CONFLICT);
             case FeignConstants.NOT_FOUND_CODE:
                 return new NotFoundException(message != null ? message.getMessage() : FeignConstants.NOT_FOUND);
             default:
