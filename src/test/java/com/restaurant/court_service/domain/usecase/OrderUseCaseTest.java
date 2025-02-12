@@ -238,4 +238,56 @@ class OrderUseCaseTest {
         verify(orderPersistencePort).deliverOrder(orderId);
     }
 
+    @Test
+    void cancelOrder_WhenOrderNotFound_ShouldThrowEntityNotFoundException() {
+        Long orderId = 1L;
+        Long clientId= 1L;
+        when(orderPersistencePort.existById(orderId)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            orderUseCase.cancelOrder(orderId,clientId);
+        });
+    }
+
+    @Test
+    void cancelOrder_WhenUserIsNotAuthorized_ShouldThrowEntityNotFoundException() {
+        Long orderId = 1L;
+        Long clientId = 1L;
+
+        when(orderPersistencePort.existById(orderId)).thenReturn(true);
+        when(orderPersistencePort.existByIdAndClientId(orderId, clientId)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            orderUseCase.cancelOrder(orderId, clientId);
+        });
+    }
+
+
+    @Test
+    void cancelOrder_WhenOrderStatusIsNotInPending_ShouldThrowOrderIsAlreadyInPreparation() {
+        Long orderId = 1L;
+        Long clientId= 1L;
+        when(orderPersistencePort.existById(orderId)).thenReturn(true);
+        when(orderPersistencePort.existByIdAndClientId(orderId,clientId)).thenReturn(true);
+        when(orderPersistencePort.checkOrderStatus(orderId, Constants.PENDING)).thenReturn(false);
+
+        assertThrows(OrderIsAlreadyInPreparationException.class, () -> {
+            orderUseCase.cancelOrder(orderId,clientId);
+        });
+    }
+
+    @Test
+    void cancelOrder_WhenOrderIsPendingAndClientIsAuthorized_ShouldCancelOrder() {
+        Long orderId = 1L;
+        Long clientId= 1L;
+
+        when(orderPersistencePort.existById(orderId)).thenReturn(true);
+        when(orderPersistencePort.existByIdAndClientId(orderId,clientId)).thenReturn(true);
+        when(orderPersistencePort.checkOrderStatus(orderId, Constants.PENDING)).thenReturn(true);
+
+        orderUseCase.cancelOrder(orderId,clientId);
+
+        verify(orderPersistencePort).cancelOrder(orderId);
+    }
+
 }

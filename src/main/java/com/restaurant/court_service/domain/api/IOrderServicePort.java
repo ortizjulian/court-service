@@ -14,4 +14,6 @@ public interface IOrderServicePort {
     void finishOrder(Long orderId);
 
     void deliverOrder(Long orderId, String code);
+
+    void cancelOrder(Long orderId, Long clientId);
 }

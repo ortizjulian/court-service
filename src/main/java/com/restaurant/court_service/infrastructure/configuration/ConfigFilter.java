@@ -37,6 +37,7 @@ public class ConfigFilter {
                                 .requestMatchers("/restaurant/**").hasAuthority(SecurityConstants.ROLE_ADMIN)
                                 .requestMatchers("/dish/**").hasAuthority(SecurityConstants.ROLE_OWNER)
                                 .requestMatchers(HttpMethod.POST,"/order/**").hasAuthority(SecurityConstants.ROLE_CLIENT)
+                                .requestMatchers(HttpMethod.PATCH,"/order/cancel/**").hasAuthority(SecurityConstants.ROLE_CLIENT)
                                 .requestMatchers("/order/**").hasAuthority(SecurityConstants.ROLE_EMPLOYEE)
                                 .anyRequest().authenticated()
                 )

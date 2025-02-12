@@ -1,5 +1,8 @@
 package com.restaurant.court_service.utils;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Constants {
     public static final String ORDER_STATUS = "status";
 
@@ -73,7 +76,16 @@ public class Constants {
     public static final String EXCEPTION_DISH_QUANTITY_MIN = "Quantity must be at least 1";
     public static final String EXCEPTION_CLIENT_ALREADY_HAS_ORDER = "The client already has an active order.";
     public static final String EXCEPTION_ORDER_CANT_BE_ASSIGNED = "The order is already in another state";
+    public static final String EXCEPTION_ORDER_IS_ALREADY_IN_PREPARATION ="Sorry, your order is already being prepared and cannot be canceled.";
+    public static final String NOT_AUTHORIZED_TO_ACCESS_ORDER = "User is not authorized to access this order.";
 
+    public static final List<String> statuses = Arrays.asList(
+            Constants.PENDING,
+            Constants.IN_PREPARATION,
+            Constants.READY,
+            Constants.DELIVERED,
+            Constants.CANCELED
+    );
 
     public static final String PENDING = "Pending";
     public static final String IN_PREPARATION = "In Preparation";

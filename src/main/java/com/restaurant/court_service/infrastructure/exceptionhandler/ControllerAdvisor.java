@@ -96,6 +96,13 @@ public class ControllerAdvisor {
                 .body(Collections.singletonMap(MESSAGE, ExceptionResponse.ORDER_CANT_BE_ASSIGNED.getMessage()));
     }
 
+    @ExceptionHandler(OrderIsAlreadyInPreparationException.class)
+    public ResponseEntity<Map<String, String>> handleOrderIsAlreadyInPreparationException(
+            OrderIsAlreadyInPreparationException orderIsAlreadyInPreparationException) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Collections.singletonMap(MESSAGE, ExceptionResponse.ORDER_IS_ALREADY_IN_PREPARATION.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException methodArgumentNotValidException) {
         Map<String, String> errors = new HashMap<>();
