@@ -1,5 +1,6 @@
 package com.restaurant.court_service.infrastructure.output.feign.client;
 
+import com.restaurant.court_service.domain.model.StateUpdate;
 import com.restaurant.court_service.domain.model.Traceability;
 import com.restaurant.court_service.infrastructure.configuration.feign.FeignClientConfig;
 import com.restaurant.court_service.utils.FeignConstants;
@@ -13,5 +14,8 @@ public interface TraceabilityFeignClient {
 
     @PostMapping(FeignConstants.PATH_CREATE_TRACEABILITY)
     ResponseEntity<Void> createTraceability(@RequestBody Traceability traceability);
+
+    @PostMapping(FeignConstants.PATH_TRACEABILITY_UPDATE_STATE)
+    ResponseEntity<Void> updateOrderState(@RequestBody StateUpdate stateUpdate);
 
 }

@@ -5,6 +5,8 @@ public class FeignConstants {
     public static final String PATH_VERIFY_CODE = "/order/verify-code";
     public static final String PATH_GET_USER_PHONE = "/user/phone/{userId}";
     public static final String PATH_CREATE_TRACEABILITY = "/traceability";
+    public static final String PATH_TRACEABILITY_UPDATE_STATE = "/traceability/update-state";
+
     public static final String USER_ID = "userId";
     public static final String USER_PHONE_NOT_FOUND_EXCEPTION = "User phone not found";
 

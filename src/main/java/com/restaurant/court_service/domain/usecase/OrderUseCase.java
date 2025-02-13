@@ -83,6 +83,13 @@ public class OrderUseCase implements IOrderServicePort{
 
         orderPersistencePort.assignOrder(employeeId,orderId);
 
+        String email = authenticationPersistencePort.getAuthenticatedUserEMail();
+        Traceability traceability = new Traceability(orderId,employeeId, email);
+
+        traceabilityPersistencePort.createTraceability(traceability);
+        StateUpdate stateUpdate = new StateUpdate(orderId,Constants.PENDING,Constants.IN_PREPARATION);
+        traceabilityPersistencePort.updateOrderStatus(stateUpdate);
+
     }
 
     @Override
@@ -103,6 +110,8 @@ public class OrderUseCase implements IOrderServicePort{
 
         orderPersistencePort.finishOrder(orderId);
 
+        StateUpdate stateUpdate = new StateUpdate(orderId,Constants.IN_PREPARATION,Constants.READY);
+        traceabilityPersistencePort.updateOrderStatus(stateUpdate);
     }
 
     @Override
@@ -119,6 +128,8 @@ public class OrderUseCase implements IOrderServicePort{
 
         orderPersistencePort.deliverOrder(orderId);
 
+        StateUpdate stateUpdate = new StateUpdate(orderId,Constants.READY,Constants.DELIVERED);
+        traceabilityPersistencePort.updateOrderStatus(stateUpdate);
     }
 
     @Override
@@ -136,6 +147,9 @@ public class OrderUseCase implements IOrderServicePort{
         }
 
         orderPersistencePort.cancelOrder(orderId);
+        StateUpdate stateUpdate = new StateUpdate(orderId,Constants.PENDING,Constants.CANCELED);
+        traceabilityPersistencePort.updateOrderStatus(stateUpdate);
+
     }
 
 
