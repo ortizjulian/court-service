@@ -16,8 +16,8 @@ public class AuthenticationAdapter implements IAuthenticationPersistencePort {
     }
 
     @Override
-    public String getAuthenticatedUserPhone() {
-        return getAuthenticatedUser().getPhone();
+    public String getAuthenticatedUserEMail() {
+        return getAuthenticatedUser().getEmail();
     }
 
     private SecurityUser getAuthenticatedUser() {

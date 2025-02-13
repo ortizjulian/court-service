@@ -19,13 +19,17 @@ public class OrderUseCase implements IOrderServicePort{
     private final IOrderPersistencePort orderPersistencePort;
     private final IMessagingPersistencePort messagingPersistencePort;
     private final IUserPersistencePort userPersistencePort;
+    private final IAuthenticationPersistencePort authenticationPersistencePort;
+    private final ITraceabilityPersistencePort traceabilityPersistencePort;
 
-    public OrderUseCase(IRestaurantPersistencePort restaurantPersistencePort, IDishPersistencePort dishPersistencePort, IOrderPersistencePort orderPersistencePort, IMessagingPersistencePort messagingPersistencePort, IUserPersistencePort userPersistencePort) {
+    public OrderUseCase(IRestaurantPersistencePort restaurantPersistencePort, IDishPersistencePort dishPersistencePort, IOrderPersistencePort orderPersistencePort, IMessagingPersistencePort messagingPersistencePort, IUserPersistencePort userPersistencePort, IAuthenticationPersistencePort authenticationPersistencePort, ITraceabilityPersistencePort traceabilityPersistencePort) {
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.dishPersistencePort = dishPersistencePort;
         this.orderPersistencePort = orderPersistencePort;
         this.messagingPersistencePort = messagingPersistencePort;
         this.userPersistencePort = userPersistencePort;
+        this.authenticationPersistencePort = authenticationPersistencePort;
+        this.traceabilityPersistencePort = traceabilityPersistencePort;
     }
 
     @Override
@@ -41,7 +45,13 @@ public class OrderUseCase implements IOrderServicePort{
 
         validateDishInRestaurant(placeOrder);
         placeOrder.setStatus(Constants.PENDING);
-        orderPersistencePort.createOrder(placeOrder);
+
+        Order order= orderPersistencePort.createOrder(placeOrder);
+        String email = authenticationPersistencePort.getAuthenticatedUserEMail();
+        Traceability traceability = new Traceability(order.getId(),placeOrder.getClientId().toString(), email);
+
+        traceabilityPersistencePort.createTraceability(traceability);
+
     }
 
     @Override
@@ -73,6 +83,13 @@ public class OrderUseCase implements IOrderServicePort{
 
         orderPersistencePort.assignOrder(employeeId,orderId);
 
+        String email = authenticationPersistencePort.getAuthenticatedUserEMail();
+        Traceability traceability = new Traceability(orderId,employeeId, email);
+
+        traceabilityPersistencePort.createTraceability(traceability);
+        StateUpdate stateUpdate = new StateUpdate(orderId,Constants.PENDING,Constants.IN_PREPARATION);
+        traceabilityPersistencePort.updateOrderStatus(stateUpdate);
+
     }
 
     @Override
@@ -93,6 +110,8 @@ public class OrderUseCase implements IOrderServicePort{
 
         orderPersistencePort.finishOrder(orderId);
 
+        StateUpdate stateUpdate = new StateUpdate(orderId,Constants.IN_PREPARATION,Constants.READY);
+        traceabilityPersistencePort.updateOrderStatus(stateUpdate);
     }
 
     @Override
@@ -109,6 +128,8 @@ public class OrderUseCase implements IOrderServicePort{
 
         orderPersistencePort.deliverOrder(orderId);
 
+        StateUpdate stateUpdate = new StateUpdate(orderId,Constants.READY,Constants.DELIVERED);
+        traceabilityPersistencePort.updateOrderStatus(stateUpdate);
     }
 
     @Override
@@ -126,6 +147,9 @@ public class OrderUseCase implements IOrderServicePort{
         }
 
         orderPersistencePort.cancelOrder(orderId);
+        StateUpdate stateUpdate = new StateUpdate(orderId,Constants.PENDING,Constants.CANCELED);
+        traceabilityPersistencePort.updateOrderStatus(stateUpdate);
+
     }
 
 

@@ -5,7 +5,7 @@ import com.restaurant.court_service.domain.model.PageCustom;
 import com.restaurant.court_service.domain.model.PlaceOrder;
 
 public interface IOrderPersistencePort {
-    void createOrder(PlaceOrder placeOrder);
+    Order createOrder(PlaceOrder placeOrder);
     boolean existById(Long id);
     boolean clientHasAlreadyAnOrder(Long clientId);
     PageCustom<Order> getAllOrders(Integer page, Integer size, String orderStatus, Long restaurantId);

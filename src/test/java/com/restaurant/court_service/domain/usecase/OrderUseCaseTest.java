@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,6 +34,12 @@ class OrderUseCaseTest {
 
     @Mock
     private IMessagingPersistencePort messagingPersistencePort;
+
+    @Mock
+    private IAuthenticationPersistencePort authenticationPersistencePort;
+
+    @Mock
+    private ITraceabilityPersistencePort traceabilityPersistencePort;
 
     @InjectMocks
     private OrderUseCase orderUseCase;
@@ -82,7 +89,7 @@ class OrderUseCaseTest {
     }
 
     @Test
-    void placeOrder_WhenValidOrder_ShouldCallCreateOrderOnPersistencePort() {
+    void placeOrder_WhenValidOrder_ShouldCallCreateOrderAndCreateTraceability() {
         when(orderPersistencePort.clientHasAlreadyAnOrder(placeOrder.getClientId())).thenReturn(false);
         when(restaurantPersistencePort.existById(placeOrder.getRestaurantId())).thenReturn(true);
 
@@ -90,10 +97,21 @@ class OrderUseCaseTest {
         Dish dish2 = new Dish(2L, "Jugo", 10000, "jugo", "", null, null, true);
         when(dishPersistencePort.findDishesByRestaurantId(placeOrder.getRestaurantId())).thenReturn(List.of(dish1, dish2));
 
+        Order createdOrder = new Order(1L, "Pending", LocalDate.now(), null);
+        when(orderPersistencePort.createOrder(placeOrder)).thenReturn(createdOrder);
+
+        String userEmail = "cliente@example.com";
+        when(authenticationPersistencePort.getAuthenticatedUserEMail()).thenReturn(userEmail);
+
         orderUseCase.placeOrder(placeOrder);
 
         verify(orderPersistencePort, times(1)).createOrder(placeOrder);
+
+        verify(authenticationPersistencePort, times(1)).getAuthenticatedUserEMail();
+
+        verify(traceabilityPersistencePort, times(1)).createTraceability(any());
     }
+
 
     @Test
     void getAllOrders_WhenClientDoesNotBelongToRestaurant_ShouldThrowEntityNotFoundException() {

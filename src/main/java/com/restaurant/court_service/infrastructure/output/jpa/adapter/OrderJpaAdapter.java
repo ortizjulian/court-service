@@ -8,6 +8,7 @@ import com.restaurant.court_service.domain.spi.IOrderPersistencePort;
 import com.restaurant.court_service.infrastructure.output.jpa.entity.OrderDishesEntity;
 import com.restaurant.court_service.infrastructure.output.jpa.entity.OrderEntity;
 import com.restaurant.court_service.infrastructure.output.jpa.entity.RestaurantEntity;
+import com.restaurant.court_service.infrastructure.output.jpa.mapper.OrderEntityMapper;
 import com.restaurant.court_service.infrastructure.output.jpa.mapper.PageMapper;
 import com.restaurant.court_service.infrastructure.output.jpa.repository.IDishRepository;
 import com.restaurant.court_service.infrastructure.output.jpa.repository.IOrderDishesRepository;
@@ -33,8 +34,10 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
     private final IDishRepository dishRepository;
     private final IOrderDishesRepository orderDishesRepository;
     private final PageMapper pageMapper;
+    private final OrderEntityMapper orderEntityMapper;
+
     @Override
-    public void createOrder(PlaceOrder placeOrder) {
+    public Order createOrder(PlaceOrder placeOrder) {
 
         OrderEntity orderEntity = new OrderEntity();
         RestaurantEntity restaurantEntity = restaurantRepository.getReferenceById(placeOrder.getRestaurantId());
@@ -55,6 +58,7 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
         }
 
         orderDishesRepository.saveAll(orderDishes);
+        return orderEntityMapper.toOrder(savedOrder);
     }
 
     @Override

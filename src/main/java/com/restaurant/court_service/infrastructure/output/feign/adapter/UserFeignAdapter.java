@@ -3,10 +3,8 @@ package com.restaurant.court_service.infrastructure.output.feign.adapter;
 import com.restaurant.court_service.domain.spi.IUserPersistencePort;
 import com.restaurant.court_service.infrastructure.output.feign.client.UserFeignClient;
 import com.restaurant.court_service.infrastructure.output.feign.dto.UserPhoneResponseDto;
-import com.restaurant.court_service.infrastructure.output.feign.exceptions.ConflictException;
 import com.restaurant.court_service.infrastructure.output.feign.exceptions.NotFoundException;
 import com.restaurant.court_service.utils.FeignConstants;
-import feign.Feign;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 

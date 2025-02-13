@@ -2,6 +2,7 @@ package com.restaurant.court_service.infrastructure.input.rest;
 
 import com.restaurant.court_service.application.dto.OrderDtoResponse;
 import com.restaurant.court_service.application.dto.PlaceOrderDtoRequest;
+import com.restaurant.court_service.application.handler.IAuthenticationHandler;
 import com.restaurant.court_service.application.handler.IOrderHandler;
 import com.restaurant.court_service.application.handler.ISecurityHandler;
 import com.restaurant.court_service.domain.api.IAuthenticationServicePort;
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 public class OrderRestController {
     private final IOrderHandler orderHandler;
     private final ISecurityHandler securityHandler;
-    private final IAuthenticationServicePort authenticationServicePort;
+    private final IAuthenticationHandler authenticationHandler;
 
     @Operation(
             summary = "Place a new order",
@@ -38,10 +39,16 @@ public class OrderRestController {
 
     })
     @PostMapping("/place")
-    public ResponseEntity<Void> placeOrder(@Valid @RequestBody PlaceOrderDtoRequest placeOrderDtoRequest) {
-        Long clientId = authenticationServicePort.getAuthenticatedUserId();
-        orderHandler.placeOrder(placeOrderDtoRequest, clientId);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> placeOrder(@Valid @RequestBody PlaceOrderDtoRequest placeOrderDtoRequest,@RequestHeader(SecurityConstants.AUTHORIZATION) String token) {
+
+        try {
+            securityHandler.setToken(token);
+            Long clientId = authenticationHandler.getAuthenticatedUserId();
+            orderHandler.placeOrder(placeOrderDtoRequest, clientId);
+            return ResponseEntity.noContent().build();
+        } finally {
+            securityHandler.removeToken();
+        }
     }
 
     @Operation(
@@ -54,10 +61,16 @@ public class OrderRestController {
             @ApiResponse(responseCode = "409", description = "Order cannot be assigned because it is already in another state")
     })
     @PatchMapping("/assign/{orderId}")
-    public ResponseEntity<Void> assignOrder(@PathVariable Long orderId) {
-        Long employeeId = authenticationServicePort.getAuthenticatedUserId();
-        orderHandler.assignOrder(employeeId, orderId);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> assignOrder(@PathVariable Long orderId,@RequestHeader(SecurityConstants.AUTHORIZATION) String token) {
+        try {
+            securityHandler.setToken(token);
+            Long employeeId = authenticationHandler.getAuthenticatedUserId();
+            orderHandler.assignOrder(employeeId, orderId);
+            return ResponseEntity.noContent().build();
+        } finally {
+            securityHandler.removeToken();
+        }
+
     }
 
     @Operation(
@@ -117,7 +130,7 @@ public class OrderRestController {
     public ResponseEntity<Void> cancelOrder(
             @PathVariable Long orderId
     ) {
-        Long clientId = authenticationServicePort.getAuthenticatedUserId();
+        Long clientId = authenticationHandler.getAuthenticatedUserId();
         orderHandler.cancelOrder(orderId,clientId);
         return  ResponseEntity.noContent().build();
     }
@@ -132,7 +145,7 @@ public class OrderRestController {
             @RequestParam(defaultValue = Constants.DEFAULT_SIZE) Integer size,
             @RequestParam() String  orderStatus){
 
-        Long clientId = authenticationServicePort.getAuthenticatedUserId();
+        Long clientId = authenticationHandler.getAuthenticatedUserId();
         return ResponseEntity.ok(orderHandler.getAllOrders(page,size,orderStatus,clientId));
     }
 
